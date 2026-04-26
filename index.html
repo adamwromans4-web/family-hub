@@ -705,6 +705,7 @@ var DB_DATA = {shop:{},notes:{},dayout:{},holiday:{},txs:{},goals:{},tasks:{},me
 // ═══════════════════════════════════════════════════════════════
 // SIGN IN
 // ═══════════════════════════════════════════════════════════════
+var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 function signIn(u){
   user=u; localStorage.setItem('fUser',u);
   document.getElementById('setup').classList.add('hide');
@@ -782,7 +783,6 @@ function startListeners(){
 // ═══════════════════════════════════════════════════════════════
 // SCHEDULE
 // ═══════════════════════════════════════════════════════════════
-var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var OSTYLE={
   adam:{cls:'c-adam',label:'Adam'},kristal:{cls:'c-kristal',label:'Kristal'},
   both:{cls:'c-both',label:'Adam & Kristal'},kids:{cls:'c-kids',label:'Kids'},
