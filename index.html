@@ -244,6 +244,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 
 <!-- Setup / login -->
 <div class="setup-screen" id="setup-screen">
+  <span id="app-ready" style="display:none;"></span>
   <div class="setup-logo">👨‍👩‍👧‍👦</div>
   <div style="font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:8px;">Our Family Hub</div>
   <div class="setup-sub">Adam & Kristal's family planner.<br>Who are you?</div>
@@ -827,6 +828,33 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
+<!-- Core app functions defined before Firebase loads -->
+<script>
+var currentUser = localStorage.getItem('familyUser') || null;
+
+function signInAs(user) {
+  currentUser = user;
+  localStorage.setItem('familyUser', user);
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('main-header').style.display = 'block';
+  document.getElementById('main-nav').style.display = 'flex';
+  var av = document.getElementById('user-av');
+  if (user === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
+  else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
+  var now = new Date();
+  document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  // Firebase will connect once scripts load
+  document.getElementById('app-ready').textContent = user;
+}
+
+function signInWithCode() {
+  var code = document.getElementById('family-code-input').value.trim().toLowerCase();
+  if (code === 'adam') signInAs('adam');
+  else if (code === 'kristal') signInAs('kristal');
+  else alert('Code not recognised — try "adam" or "kristal"');
+}
+</script>
+
 <!-- Firebase compat (works without modules) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -899,36 +927,10 @@ let micRecognizers = {};
 let micListening = {};
 
 // ── AUTH / SETUP ──────────────────────────────────────────────────────────────
-// These must be global so onclick handlers can find them
-window.signInAs = function(user) {
-  currentUser = user;
-  localStorage.setItem('familyUser', user);
-  document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('main-header').style.display = 'block';
-  document.getElementById('main-nav').style.display = 'flex';
-  const av = document.getElementById('user-av');
-  if (user === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
-  else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
-  const now = new Date();
-  document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const today = dayNames[now.getDay()];
-  if(DAYS && DAYS.includes(today)) activeDay = today;
-  if(typeof initDayTabs === 'function') initDayTabs();
-  if(typeof updateCatOptions === 'function') updateCatOptions();
-  showScreen('schedule', document.querySelector('.nav-item'));
-  if(typeof connectFirebase === 'function') connectFirebase();
-};
-window.signInWithCode = function() {
-  const code = document.getElementById('family-code-input').value.trim().toLowerCase();
-  if (code === 'adam') signInAs('adam');
-  else if (code === 'kristal') signInAs('kristal');
-  else alert('Code not recognised — try "adam" or "kristal"');
-};
+// signInAs and signInWithCode are defined in the plain script above Firebase
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 function initApp() {
-  // Show UI
   document.getElementById('main-header').style.display = 'block';
   document.getElementById('main-nav').style.display = 'flex';
   document.getElementById('loading-screen').classList.add('hidden');
@@ -2196,26 +2198,32 @@ window.removeOliviaGrowthEntry = function(key) { dbRemove('olivia-growth/'+key);
 (function() {
   const savedUser = localStorage.getItem('familyUser');
   if (savedUser) {
+    // User already logged in — go straight to app
     currentUser = savedUser;
-    document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('main-header').style.display = 'block';
-    document.getElementById('main-nav').style.display = 'flex';
-    const av = document.getElementById('user-av');
-    if (savedUser === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
-    else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
-    const now = new Date();
-    document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
     const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const today = dayNames[now.getDay()];
+    const today = dayNames[new Date().getDay()];
     if(DAYS.includes(today)) activeDay = today;
-    initDayTabs();
-    updateCatOptions();
-    showScreen('schedule', document.querySelector('.nav-item'));
+    initApp();
     connectFirebase();
   } else {
-    document.getElementById('loading-screen').style.display = 'none';
+    // Not logged in — show login screen
     document.getElementById('setup-screen').style.display = 'flex';
+    // Watch for sign in via the plain script above
+    var observer = new MutationObserver(function() {
+      var ready = document.getElementById('app-ready');
+      if (ready && ready.textContent) {
+        observer.disconnect();
+        currentUser = ready.textContent;
+        document.getElementById('setup-screen').style.display = 'none';
+        var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        var today = dayNames[new Date().getDay()];
+        if(DAYS.includes(today)) activeDay = today;
+        initApp();
+        connectFirebase();
+      }
+    });
+    observer.observe(document.getElementById('app-ready'), { childList: true, characterData: true, subtree: true });
   }
 })();
 </script>
