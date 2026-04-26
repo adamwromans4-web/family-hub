@@ -827,14 +827,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
   </div>
 </div>
 
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, set, onValue, push, remove, update }
-  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
-
+<!-- Firebase compat (works without modules) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
 // ── FIREBASE CONFIG ───────────────────────────────────────────────────────────
-// REPLACE THESE VALUES with your own Firebase project config
 const firebaseConfig = {
   apiKey: "AIzaSyCPorlwE9Zl4M9jMS-SX9rVWEN2Z1Osxgg",
   authDomain: "our-family-hub-d104d.firebaseapp.com",
@@ -846,35 +843,19 @@ const firebaseConfig = {
   measurementId: "G-DCFTKTV0DY"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-// Show setup or app immediately — don't wait for Firebase
-document.addEventListener('DOMContentLoaded', () => {
-  const user = localStorage.getItem('familyUser');
-  if (user) {
-    currentUser = user;
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('main-header').style.display = 'block';
-    document.getElementById('main-nav').style.display = 'flex';
-    const av = document.getElementById('user-av');
-    if (user === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
-    else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
-    const now = new Date();
-    document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
-    const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const today = dayNames[now.getDay()];
-    if(DAYS.includes(today)) activeDay = today;
-    initDayTabs();
-    updateCatOptions();
-    showScreen('schedule', document.querySelector('.nav-item'));
-    // Connect Firebase in background
-    connectFirebase();
-  } else {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('setup-screen').style.display = 'flex';
-  }
-});
+// Firebase helpers
+function dbSet(path, val) { return db.ref(path).set(val); }
+function dbPush(path, val) { return db.ref(path).push(val); }
+function dbRemove(path) { return db.ref(path).remove(); }
+function dbUpdate(path, val) { return db.ref(path).update(val); }
+function dbListen(path, cb) { db.ref(path).on('value', snap => cb(snap.val())); }
+
+function setSyncing() { const d=document.getElementById('sync-dot'); if(d) d.className='sync-dot syncing'; }
+function setSynced()  { const d=document.getElementById('sync-dot'); if(d) { d.className='sync-dot synced'; setTimeout(()=>d.className='sync-dot',3000); } }
+function setError()   { const d=document.getElementById('sync-dot'); if(d) d.className='sync-dot error'; }
 
 function connectFirebase() {
   try {
@@ -917,33 +898,8 @@ let currentPeriod = 'weekly';
 let micRecognizers = {};
 let micListening = {};
 
-// ── SYNC INDICATOR ────────────────────────────────────────────────────────────
-function setSyncing() { const d=document.getElementById('sync-dot'); d.className='sync-dot syncing'; }
-function setSynced()  { const d=document.getElementById('sync-dot'); d.className='sync-dot synced'; setTimeout(()=>d.className='sync-dot',3000); }
-function setError()   { document.getElementById('sync-dot').className='sync-dot error'; }
-
-// ── FIREBASE HELPERS ──────────────────────────────────────────────────────────
-function dbSet(path, val) {
-  setSyncing();
-  return set(ref(db, path), val).then(setSynced).catch(setError);
-}
-function dbPush(path, val) {
-  setSyncing();
-  return push(ref(db, path), val).then(setSynced).catch(setError);
-}
-function dbRemove(path) {
-  setSyncing();
-  return remove(ref(db, path)).then(setSynced).catch(setError);
-}
-function dbUpdate(path, val) {
-  setSyncing();
-  return update(ref(db, path), val).then(setSynced).catch(setError);
-}
-function dbListen(path, cb) {
-  onValue(ref(db, path), snap => cb(snap.val()));
-}
-
 // ── AUTH / SETUP ──────────────────────────────────────────────────────────────
+// These must be global so onclick handlers can find them
 window.signInAs = function(user) {
   currentUser = user;
   localStorage.setItem('familyUser', user);
@@ -957,11 +913,11 @@ window.signInAs = function(user) {
   document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
   const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const today = dayNames[now.getDay()];
-  if(DAYS.includes(today)) activeDay = today;
-  initDayTabs();
-  updateCatOptions();
+  if(DAYS && DAYS.includes(today)) activeDay = today;
+  if(typeof initDayTabs === 'function') initDayTabs();
+  if(typeof updateCatOptions === 'function') updateCatOptions();
   showScreen('schedule', document.querySelector('.nav-item'));
-  connectFirebase();
+  if(typeof connectFirebase === 'function') connectFirebase();
 };
 window.signInWithCode = function() {
   const code = document.getElementById('family-code-input').value.trim().toLowerCase();
@@ -2237,7 +2193,31 @@ window.addOliviaSpurtEntry = function() {
 window.removeOliviaGrowthEntry = function(key) { dbRemove('olivia-growth/'+key); };
 
 // ── START ─────────────────────────────────────────────────────────────────────
-// App startup is handled by window.addEventListener('load') above
+(function() {
+  const savedUser = localStorage.getItem('familyUser');
+  if (savedUser) {
+    currentUser = savedUser;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'none';
+    document.getElementById('main-header').style.display = 'block';
+    document.getElementById('main-nav').style.display = 'flex';
+    const av = document.getElementById('user-av');
+    if (savedUser === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
+    else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
+    const now = new Date();
+    document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const today = dayNames[now.getDay()];
+    if(DAYS.includes(today)) activeDay = today;
+    initDayTabs();
+    updateCatOptions();
+    showScreen('schedule', document.querySelector('.nav-item'));
+    connectFirebase();
+  } else {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
+  }
+})();
 </script>
 </body>
 </html>
