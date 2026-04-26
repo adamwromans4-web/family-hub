@@ -236,14 +236,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 <body>
 
 <!-- Loading -->
-<div class="loading-screen" id="loading-screen">
+<div class="loading-screen hidden" id="loading-screen">
   <div style="font-family:'DM Serif Display',serif;font-size:26px;">Our Family</div>
   <div class="spinner"></div>
   <div style="font-size:13px;color:var(--text-2);">Connecting...</div>
 </div>
 
 <!-- Setup / login -->
-<div class="setup-screen hidden" id="setup-screen">
+<div class="setup-screen" id="setup-screen">
   <div class="setup-logo">👨‍👩‍👧‍👦</div>
   <div style="font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:8px;">Our Family Hub</div>
   <div class="setup-sub">Adam & Kristal's family planner.<br>Who are you?</div>
@@ -850,7 +850,7 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // Show setup or app immediately — don't wait for Firebase
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const user = localStorage.getItem('familyUser');
   if (user) {
     currentUser = user;
