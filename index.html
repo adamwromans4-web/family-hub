@@ -861,12 +861,158 @@ function mergeSchedule(def,saved){
   return m;
 }
 
+function getDefault(){
+  var bath=[
+    {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:'family'},
+    {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+    {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''}
+  ];
+  return {
+    Mon:[
+      {time:'5:00',label:'Adam leaves for gym',sub:'Kristal on night duty with Austin',owner:'gym',tag:''},
+      {time:'5:00',label:'Kristal — night duty',sub:'Until Adam returns',owner:'kristal',tag:''},
+      {time:'6:00',label:'Olivia up — self-sufficient',sub:'Shower, breakfast, walks to school',owner:'kids',tag:''},
+      {time:'6:45',label:'Adam returns — takes over',sub:'Kristal goes to rest now',owner:'adam',tag:''},
+      {time:'6:45',label:'Kristal — protected rest',sub:'Do not disturb.',owner:'kristal',tag:'break'},
+      {time:'7:00',label:'Adam — Austin morning routine',sub:'Breakfast, dressed, nursery bag',owner:'adam',tag:''},
+      {time:'7:50',label:'Olivia walks to school',sub:'Self-managed',owner:'kids',tag:''},
+      {time:'8:00',label:'Adam drops Austin at nursery then work',sub:'Adam 8am–5pm',owner:'adam',tag:''},
+      {time:'9:00',label:'Kristal — meetings from home',sub:'Flexible around chores and shopping',owner:'kristal',tag:''},
+      {time:'10:00',label:'Kristal — washing / food shop',sub:'Best window while Austin is at nursery',owner:'shop',tag:''},
+      {time:'14:30',label:'Olivia home from school',sub:'Snack, homework, self-directed',owner:'kids',tag:''},
+      {time:'17:00',label:'Kristal collects Austin & starts cooking tea',sub:'For Kristal, Austin & Olivia',owner:'kristal',tag:''},
+      {time:'17:00',label:'Adam finishes work — home by 5:30',sub:'Keeps Austin occupied while Kristal cooks',owner:'adam',tag:''},
+      {time:'18:00',label:'Tea time',sub:'Kristal, Austin & Olivia',owner:'kids',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:'family'},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'20:00',label:'Adam & Kristal time',sub:'Protect this — no chores, no phones',owner:'both',tag:'couple'}
+    ],
+    Tue:[
+      {time:'6:00',label:'Olivia up — self-sufficient',sub:'Shower, breakfast, walks to school',owner:'kids',tag:''},
+      {time:'7:00',label:'Adam — Austin morning routine',sub:'Breakfast, dressed, nursery bag',owner:'adam',tag:''},
+      {time:'7:50',label:'Olivia walks to school',sub:'Self-managed',owner:'kids',tag:''},
+      {time:'8:00',label:'Adam — washing on before leaving',sub:'His machine day all day Tuesday',owner:'wash',tag:''},
+      {time:'8:00',label:'Kristal drops Austin at nursery',sub:'Adam heads straight to work',owner:'kristal',tag:''},
+      {time:'8:00',label:'Adam at work',sub:'8am–5pm',owner:'adam',tag:''},
+      {time:'9:00',label:'Kristal — meetings from home',sub:'Chores and family admin in between',owner:'kristal',tag:''},
+      {time:'11:00',label:'Kristal — family chores / supplies',sub:'No food shop — Adam has washing machine',owner:'shop',tag:''},
+      {time:'14:30',label:'Olivia home from school',sub:'Snack, homework, self-directed',owner:'kids',tag:''},
+      {time:'17:00',label:'Kristal collects Austin & starts cooking tea',sub:'',owner:'kristal',tag:''},
+      {time:'17:00',label:'Adam finishes work — home by 5:30',sub:'',owner:'adam',tag:''},
+      {time:'18:00',label:'Tea time',sub:'Kristal, Austin & Olivia',owner:'kids',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:'family'},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'20:00',label:'Adam & Kristal time',sub:'Then Adam takes over nights',owner:'both',tag:'couple'},
+      {time:'21:00',label:'Adam on night duty',sub:'Kristal goes to bed — full night off',owner:'adam',tag:'break'},
+      {time:'21:00',label:'Kristal — full night sleep',sub:'First reset of the week. Do not wake.',owner:'kristal',tag:'break'}
+    ],
+    Wed:[
+      {time:'5:00',label:'Adam leaves for gym',sub:'Kristal on night duty — rested after Tue off',owner:'gym',tag:''},
+      {time:'5:00',label:'Kristal — night duty',sub:'Better rested after Tuesday night off',owner:'kristal',tag:''},
+      {time:'6:00',label:'Olivia up — self-sufficient',sub:'Shower, breakfast, walks to school',owner:'kids',tag:''},
+      {time:'6:45',label:'Adam returns — takes over',sub:'Kristal goes to rest now',owner:'adam',tag:''},
+      {time:'6:45',label:'Kristal — protected rest',sub:'Do not disturb.',owner:'kristal',tag:'break'},
+      {time:'7:00',label:'Adam — Austin morning routine',sub:'Breakfast, dressed, nursery bag',owner:'adam',tag:''},
+      {time:'7:50',label:'Olivia walks to school',sub:'Self-managed',owner:'kids',tag:''},
+      {time:'8:00',label:'Adam drops Austin at nursery then work',sub:'Adam 8am–5pm',owner:'adam',tag:''},
+      {time:'9:00',label:'Kristal — meetings from home',sub:'Flexible around chores and shopping',owner:'kristal',tag:''},
+      {time:'10:00',label:'Kristal — washing / food shop',sub:'Good window while Austin is at nursery',owner:'shop',tag:''},
+      {time:'14:30',label:'Olivia home from school',sub:'Self-directed',owner:'kids',tag:''},
+      {time:'17:00',label:'Kristal collects Austin & starts cooking tea',sub:'',owner:'kristal',tag:''},
+      {time:'17:00',label:'Adam finishes work — home by 5:30',sub:'',owner:'adam',tag:''},
+      {time:'18:00',label:'Tea time',sub:'Kristal, Austin & Olivia',owner:'kids',tag:'family'},
+      {time:'19:00',label:'Adam handles Austin & bath tonight',sub:'Kristal gets ready — date night fortnight',owner:'adam',tag:''},
+      {time:'19:40',label:'Adam puts Austin down',sub:'Kristal free to get ready',owner:'adam',tag:''},
+      {time:'20:00',label:'FORTNIGHTLY — Grandma Nicky arrives',sub:'Takes over both Austin & Olivia',owner:'helper',tag:'helper'},
+      {time:'20:00',label:'Adam & Kristal — date night out',sub:'Go out together. No guilt. You both need this.',owner:'both',tag:'date'},
+      {time:'22:30',label:'Home — Grandma Nicky heads off',sub:'Or stays over if agreed',owner:'helper',tag:''}
+    ],
+    Thu:[
+      {time:'6:00',label:'Olivia up — self-sufficient',sub:'Shower, breakfast, walks to school',owner:'kids',tag:''},
+      {time:'7:00',label:'Adam — Austin morning routine',sub:'Breakfast, dressed',owner:'adam',tag:''},
+      {time:'7:50',label:'Olivia walks to school',sub:'Self-managed',owner:'kids',tag:''},
+      {time:'8:00',label:'Adam at work',sub:'8am–5pm',owner:'adam',tag:''},
+      {time:'8:00',label:'Kristal — Austin at home until Laura',sub:'Shared care morning',owner:'kristal',tag:''},
+      {time:'9:00',label:'Auntie Laura arrives — takes Austin',sub:'Kristal and Adam free to work 9–12',owner:'helper',tag:'helper'},
+      {time:'9:00',label:'Kristal — 3 hours uninterrupted work',sub:'No Austin. Full focus.',owner:'kristal',tag:'break'},
+      {time:'12:00',label:'Auntie Laura hands Austin back',sub:'',owner:'kristal',tag:''},
+      {time:'12:00',label:'Kristal — afternoon meetings / chores',sub:'Shopping, supplies, family admin',owner:'shop',tag:''},
+      {time:'14:30',label:'Olivia home from school',sub:'Self-directed time',owner:'kids',tag:''},
+      {time:'17:00',label:'Adam finishes work — home by 5pm',sub:'No nursery run today',owner:'adam',tag:''},
+      {time:'17:00',label:'Kristal starts cooking tea',sub:'For Kristal, Austin & Olivia',owner:'kristal',tag:''},
+      {time:'18:00',label:'Tea time',sub:'Lighter Thursday evening',owner:'kids',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:'family'},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'20:00',label:'Adam & Kristal time',sub:'Then Adam takes over nights',owner:'both',tag:'couple'},
+      {time:'21:00',label:'Adam on night duty',sub:'Kristal goes to bed — full night off',owner:'adam',tag:'break'},
+      {time:'21:00',label:'Kristal — full night sleep',sub:'Second reset — going into Friday rested',owner:'kristal',tag:'break'}
+    ],
+    Fri:[
+      {time:'5:00',label:'Adam leaves for gym',sub:'Kristal on night duty — rested after Thu off',owner:'gym',tag:''},
+      {time:'5:00',label:'Kristal — night duty',sub:'Better rested going in',owner:'kristal',tag:''},
+      {time:'6:00',label:'Olivia up — self-sufficient',sub:'Shower, breakfast, walks to school',owner:'kids',tag:''},
+      {time:'6:45',label:'Adam returns — takes over',sub:'Kristal rests before full day with Austin',owner:'adam',tag:''},
+      {time:'6:45',label:'Kristal — protected rest',sub:'Rest before full day with Austin.',owner:'kristal',tag:'break'},
+      {time:'7:00',label:'Adam — Austin morning routine',sub:'Breakfast, dressed, play',owner:'adam',tag:''},
+      {time:'7:50',label:'Olivia walks to school',sub:'Self-managed',owner:'kids',tag:''},
+      {time:'8:00',label:'Adam at work',sub:'8am–5pm',owner:'adam',tag:''},
+      {time:'8:30',label:'Kristal takes over — full day with Austin',sub:'Meetings, park, activities around Austin',owner:'kristal',tag:''},
+      {time:'11:00',label:'Kristal — food shop with Austin',sub:'Good Friday window',owner:'shop',tag:''},
+      {time:'14:30',label:'Olivia home — weekend starts for her',sub:'',owner:'kids',tag:''},
+      {time:'17:00',label:'Adam finishes work — weekend begins',sub:'',owner:'adam',tag:''},
+      {time:'17:00',label:'Kristal starts cooking Friday tea',sub:'Something nice to end the week',owner:'kristal',tag:''},
+      {time:'18:00',label:'Family tea — all four together',sub:'Celebrate making it through the week',owner:'both',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:'family'},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'20:30',label:'Adam & Kristal — Friday evening',sub:'Later finish. You made it.',owner:'both',tag:'couple'}
+    ],
+    Sat:[
+      {time:'8:00',label:'Slow start — no alarms',sub:'Everyone up in their own time',owner:'rest',tag:''},
+      {time:'9:30',label:'Breakfast together — all four',sub:'Relaxed, no time pressure',owner:'both',tag:'family'},
+      {time:'10:30',label:'Family activity — all four',sub:'Park, soft play, day trip, bike ride',owner:'both',tag:'family'},
+      {time:'12:30',label:'Lunch together',sub:'At home or out',owner:'both',tag:'family'},
+      {time:'13:30',label:'Austin nap / quiet time',sub:'',owner:'kids',tag:''},
+      {time:'13:30',label:'Adam — solo rest time',sub:'90 mins minimum. Genuine downtime.',owner:'adam',tag:'break'},
+      {time:'15:00',label:'Swap — Kristal solo time',sub:'Adam takes Austin & Olivia. Kristal fully off.',owner:'kristal',tag:'break'},
+      {time:'16:30',label:'Family afternoon',sub:'Garden, play, low key',owner:'both',tag:'family'},
+      {time:'17:00',label:'Kristal cooks Saturday tea',sub:'Family meal',owner:'kristal',tag:''},
+      {time:'18:00',label:'Tea time — all four together',sub:'',owner:'both',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:''},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'20:00',label:'Adam & Kristal — couple evening',sub:'Film, conversation, just the two of you',owner:'both',tag:'couple'}
+    ],
+    Sun:[
+      {time:'8:00',label:'Slow morning — no plans, no pressure',sub:'Everyone up whenever. Sunday is for rest.',owner:'rest',tag:''},
+      {time:'9:30',label:'Breakfast — relaxed, at home',sub:'No rushing, no going out',owner:'both',tag:''},
+      {time:'10:30',label:'Home play — Austin & Olivia',sub:'Garden, toys, TV',owner:'kids',tag:''},
+      {time:'10:30',label:'Adam & Kristal — quiet time',sub:'Read, rest, sit together. No chores.',owner:'both',tag:'break'},
+      {time:'12:30',label:'Easy lunch — leftovers or simple',sub:'No cooking on Sundays.',owner:'both',tag:''},
+      {time:'13:30',label:'Austin nap — both adults rest too',sub:'Both rest simultaneously. Non-negotiable.',owner:'rest',tag:'break'},
+      {time:'15:30',label:'Week prep — 30 minutes max',sub:'Bags, lunches, confirm meetings & night rota',owner:'both',tag:''},
+      {time:'16:00',label:'Olivia preps her own week',sub:'Bag, uniform, alarm — she owns this',owner:'kids',tag:''},
+      {time:'16:30',label:'Rest resumes',sub:'Sunday stays a rest day',owner:'rest',tag:'break'},
+      {time:'17:00',label:'Kristal cooks Sunday tea',sub:'Simple family meal',owner:'kristal',tag:''},
+      {time:'18:00',label:'Tea time — all four together',sub:'',owner:'both',tag:'family'},
+      {time:'19:00',label:'Austin upstairs — bath time',sub:'Adam runs the bath',owner:'adam',tag:''},
+      {time:'19:20',label:'Adam gets Austin ready for bed',sub:'Pyjamas, teeth, wind down',owner:'adam',tag:''},
+      {time:'19:40',label:'Kristal puts Austin down to sleep',sub:'Stories, settle, lights out',owner:'kristal',tag:''},
+      {time:'19:45',label:'Adam & Kristal — 15-min check-in',sub:'Review week, meetings, nights, Grandma Nicky fortnight?',owner:'both',tag:'couple'},
+      {time:'20:15',label:'Early night — both in bed',sub:'Protect sleep.',owner:'rest',tag:''}
+    ]
+  };
+}
+
 function addSlot(){
-  if(!schedData[activeDay])schedData[activeDay]=[];
-  var arr=Array.isArray(schedData[activeDay])?schedData[activeDay]:Object.values(schedData[activeDay]);
+  var arr=schedData[activeDay]?[].concat(schedData[activeDay]):[];
   arr.push({time:'12:00',label:'New slot',sub:'',owner:'both',tag:''});
-  openModal(activeDay,arr.length-1);
+  schedData[activeDay]=arr;
   renderSlots();
+  openModal(activeDay,arr.length-1);
 }
 
 function openModal(day,idx){
@@ -1214,216 +1360,4 @@ function renderSleep(){
     var key=e[0]; var s=e[1];
     var div=document.createElement('div');
     div.style.cssText='background:'+(bg[s.quality]||'var(--surface)')+';border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
-    div.innerHTML='<div style="font-size:22px;">'+(em[s.quality]||'😐')+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:'+(tx[s.quality]||'var(--text)')+';">'+(s.quality?s.quality.charAt(0).toUpperCase()+s.quality.slice(1):'')+'</div><div style="font-size:12px;color:var(--t2);">'+s.date+' · '+(s.by||'')+(s.notes?' · '+s.notes:'')+'</div></div><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\'sleep/'+key+'\')">×</span>';
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// GROWTH
-// ═══════════════════════════════════════════════════════════════
-function addGrowth(who){
-  var hEl=document.getElementById((who==='austin'?'gr':'ol')+'-h');
-  var wEl=document.getElementById((who==='austin'?'gr':'ol')+'-w');
-  var nEl=document.getElementById((who==='austin'?'gr':'ol')+'-notes');
-  var h=hEl.value; var w=wEl.value; var notes=nEl.value.trim();
-  if(!h&&!w){alert('Enter height or weight');return;}
-  var now=new Date();
-  fPush('growth-'+who,{type:'measurement',height:h,weight:w,notes:notes,by:user,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),at:now.getTime()});
-  hEl.value=''; wEl.value=''; nEl.value='';
-}
-
-function addSpurt(who){
-  var nEl=document.getElementById((who==='austin'?'gr':'ol')+'-spurt');
-  var sEl=document.getElementById((who==='austin'?'gr':'ol')+'-status');
-  var notes=nEl.value.trim(); if(!notes)return;
-  var now=new Date();
-  fPush('growth-'+who,{type:'spurt',notes:notes,status:sEl.value,by:user,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),at:now.getTime()});
-  nEl.value='';
-}
-
-function renderGrowth(who){
-  var data=who==='austin'?DB_DATA.growth:DB_DATA.olivia;
-  var cid=who==='austin'?'growth-list':'olivia-list';
-  var path='growth-'+who;
-  var c=document.getElementById(cid); if(!c)return; c.innerHTML='';
-  var items=Object.entries(data).sort(function(a,b){return b[1].at-a[1].at;});
-  if(!items.length){c.innerHTML='<div style="color:var(--t3);font-size:14px;">No entries yet</div>';return;}
-  var meas=items.filter(function(e){return e[1].type==='measurement';});
-  if(meas.length){
-    var lat=meas[0][1]; var prev=meas[1]?meas[1][1]:null;
-    var hd=prev&&lat.height&&prev.height?(parseFloat(lat.height)-parseFloat(prev.height)).toFixed(1):null;
-    var wd=prev&&lat.weight&&prev.weight?(parseFloat(lat.weight)-parseFloat(prev.weight)).toFixed(1):null;
-    var sd=document.createElement('div');
-    sd.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;';
-    sd.innerHTML='<div style="background:#F5F3FF;border:1px solid #DDD6FE;border-radius:var(--rs);padding:12px;text-align:center;"><div style="font-size:24px;font-weight:700;color:#7C3AED;">'+(lat.height||'—')+'<span style="font-size:13px;font-weight:400;">cm</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Height '+(hd?'<span style="color:#059669;">+'+hd+'cm</span>':'')+'</div></div><div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:var(--rs);padding:12px;text-align:center;"><div style="font-size:24px;font-weight:700;color:#059669;">'+(lat.weight||'—')+'<span style="font-size:13px;font-weight:400;">kg</span></div><div style="font-size:11px;color:#6B7280;margin-top:2px;">Weight '+(wd?'<span style="color:#059669;">+'+wd+'kg</span>':'')+'</div></div>';
-    c.appendChild(sd);
-  }
-  var sc2={suspected:{bg:'#FFFBEB',bd:'#FDE68A',dot:'#D97706',lbl:'🟡 Suspected spurt'},active:{bg:'#FEF2F2',bd:'#FECACA',dot:'#DC2626',lbl:'🔴 Active spurt'},ended:{bg:'#ECFDF5',bd:'#A7F3D0',dot:'#059669',lbl:'🟢 Spurt ended'}};
-  items.forEach(function(e){
-    var key=e[0]; var en=e[1]; var div=document.createElement('div');
-    if(en.type==='measurement'){
-      div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
-      div.innerHTML='<div style="font-size:22px;">📏</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+(en.height?en.height+'cm':'')+( en.height&&en.weight?' · ':'')+( en.weight?en.weight+'kg':'')+'</div><div style="font-size:12px;color:var(--t2);">'+en.date+(en.notes?' · '+en.notes:'')+' · '+(en.by||'')+'</div></div><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\''+path+'/'+key+'\')">×</span>';
-    } else {
-      var s=sc2[en.status]||sc2.suspected;
-      div.style.cssText='background:'+s.bg+';border:1px solid '+s.bd+';border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;';
-      div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><span style="font-size:11px;font-weight:700;color:'+s.dot+';">'+s.lbl+'</span><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\''+path+'/'+key+'\')">×</span></div><div style="font-size:13px;line-height:1.5;">'+en.notes+'</div><div style="font-size:11px;color:var(--t3);margin-top:4px;">'+en.date+' · '+(en.by||'')+'</div>';
-    }
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// MEDICINE
-// ═══════════════════════════════════════════════════════════════
-function addMed(){
-  var name=document.getElementById('med-name').value.trim(); if(!name)return;
-  var dose=document.getElementById('med-dose').value.trim();
-  var exp=document.getElementById('med-exp').value.trim();
-  fPush('medicine',{name:name,dose:dose,expiry:exp,stock:'ok'});
-  document.getElementById('med-name').value='';
-  document.getElementById('med-dose').value='';
-  document.getElementById('med-exp').value='';
-}
-
-function renderMed(){
-  var c=document.getElementById('med-list'); if(!c)return; c.innerHTML='';
-  var items=Object.entries(DB_DATA.med);
-  if(!items.length){c.innerHTML='<div style="color:var(--t3);font-size:14px;">No medicines yet</div>';return;}
-  items.forEach(function(e){
-    var key=e[0]; var m=e[1]; var low=m.stock==='low';
-    var div=document.createElement('div');
-    div.style.cssText='background:'+(low?'#FEF2F2':'var(--surface)')+';border:1px solid '+(low?'#FECACA':'var(--border)')+';border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
-    div.innerHTML='<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+m.name+' '+(low?'<span style="color:#DC2626;font-size:11px;">⚠️ Low</span>':'')+'</div><div style="font-size:12px;color:var(--t2);margin-top:2px;">'+(m.dose||'')+' '+(m.expiry?'· Expires '+m.expiry:'')+'</div></div><select onchange="fUpdate(\'medicine/'+key+'\',{stock:this.value})" style="font-size:12px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;background:var(--bg);"><option value="ok" '+(m.stock==='ok'?'selected':'')+'>✅ In stock</option><option value="low" '+(m.stock==='low'?'selected':'')+'>⚠️ Low</option><option value="out" '+(m.stock==='out'?'selected':'')+'>❌ Out</option></select><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\'medicine/'+key+'\')">×</span>';
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// NIGHT LOG
-// ═══════════════════════════════════════════════════════════════
-function addNightLog(){
-  var note=document.getElementById('nl-inp').value.trim(); if(!note)return;
-  var now=new Date();
-  fPush('nightlog',{note:note,by:user,date:now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}),at:now.getTime()});
-  document.getElementById('nl-inp').value='';
-}
-
-function renderNL(){
-  var c=document.getElementById('nl-list'); if(!c)return; c.innerHTML='';
-  var items=Object.entries(DB_DATA.nl).sort(function(a,b){return b[1].at-a[1].at;}).slice(0,10);
-  if(!items.length){c.innerHTML='<div style="color:var(--t3);font-size:14px;">No logs yet</div>';return;}
-  items.forEach(function(e){
-    var key=e[0]; var n=e[1]; var div=document.createElement('div');
-    div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;';
-    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:12px;font-weight:600;color:var(--t2);">'+n.date+' · '+(n.by||'family')+' on duty</div><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\'nightlog/'+key+'\')">×</span></div><div style="font-size:13px;line-height:1.5;">'+n.note+'</div>';
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// CONTACTS
-// ═══════════════════════════════════════════════════════════════
-function addContact(){
-  var name=document.getElementById('ct-name').value.trim(); if(!name)return;
-  var role=document.getElementById('ct-role').value.trim();
-  var phone=document.getElementById('ct-phone').value.trim();
-  var emoji=document.getElementById('ct-emoji').value.trim()||'👤';
-  fPush('contacts',{name:name,role:role,phone:phone,emoji:emoji});
-  document.getElementById('ct-name').value='';
-  document.getElementById('ct-role').value='';
-  document.getElementById('ct-phone').value='';
-  document.getElementById('ct-emoji').value='';
-}
-
-function renderContacts(){
-  var c=document.getElementById('ct-list'); if(!c)return; c.innerHTML='';
-  var items=Object.entries(DB_DATA.ct);
-  if(!items.length){c.innerHTML='<div style="color:var(--t3);font-size:14px;">No contacts yet</div>';return;}
-  items.forEach(function(e){
-    var key=e[0]; var ct=e[1]; var div=document.createElement('div');
-    div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;display:flex;align-items:center;gap:12px;';
-    div.innerHTML='<div style="width:38px;height:38px;border-radius:50%;background:#EFF6FF;color:#2563EB;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">'+(ct.emoji||'👤')+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+ct.name+'</div><div style="font-size:12px;color:var(--t2);">'+( ct.role||'')+'</div><a href="tel:'+ct.phone+'" style="font-size:13px;color:#2563EB;font-weight:600;text-decoration:none;">'+ct.phone+'</a></div><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\'contacts/'+key+'\')">×</span>';
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// GRANDMA NICKY
-// ═══════════════════════════════════════════════════════════════
-function addNickyNote(){
-  var note=document.getElementById('nk-note').value.trim(); if(!note)return;
-  var cat=document.getElementById('nk-cat').value;
-  var now=new Date();
-  fPush('nicky',{text:note,cat:cat,date:now.toLocaleDateString('en-GB',{day:'numeric',month:'short'}),at:now.getTime()});
-  document.getElementById('nk-note').value='';
-}
-
-function renderNicky(){
-  var c=document.getElementById('nk-list'); if(!c)return; c.innerHTML='';
-  var items=Object.entries(DB_DATA.nicky).sort(function(a,b){return b[1].at-a[1].at;});
-  if(!items.length){c.innerHTML='<div style="color:var(--t3);font-size:14px;">No notes yet</div>';return;}
-  items.forEach(function(e){
-    var key=e[0]; var n=e[1]; var div=document.createElement('div');
-    div.style.cssText='background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 13px;margin-bottom:6px;';
-    div.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div style="font-size:11px;font-weight:600;color:var(--t3);">'+(n.cat||'note').toUpperCase()+' · '+n.date+'</div><span style="color:var(--t3);font-size:16px;cursor:pointer;" onclick="fRemove(\'nicky/'+key+'\')">×</span></div><div style="font-size:13px;line-height:1.5;">'+n.text+'</div>';
-    c.appendChild(div);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// VOICE / MIC
-// ═══════════════════════════════════════════════════════════════
-var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-var micActive={};
-var micRec={};
-
-function toggleMic(ctx){
-  if(!SR){var s=document.getElementById('vs-'+ctx);if(s)s.textContent='Voice not supported';return;}
-  if(micActive[ctx]){micRec[ctx]&&micRec[ctx].stop();return;}
-  micActive[ctx]=true;
-  var btn=document.getElementById('mic-'+ctx);
-  var status=document.getElementById('vs-'+ctx);
-  if(btn){btn.classList.add('on');btn.textContent='⏹';}
-  if(status){status.textContent='Listening...';status.className='vstatus on';}
-  var r=new SR(); r.lang='en-GB'; r.continuous=false; r.interimResults=true;
-  r.onresult=function(e){
-    var t=Array.from(e.results).map(function(r){return r[0].transcript;}).join('');
-    var final=e.results[e.results.length-1].isFinal;
-    if(ctx==='note'){
-      var ta=document.getElementById('note-inp');
-      var ex=ta.value;
-      ta.value=ex+(ex&&!ex.endsWith(' ')?' ':'')+t;
-      if(status)status.textContent=final?'Got it — tap Save or speak more':'Listening...';
-    } else {
-      var inp=document.getElementById(ctx+'-inp');
-      if(inp)inp.value=t;
-      if(final&&status)status.textContent='"'+t+'" — tap Add';
-    }
-  };
-  r.onend=function(){
-    micActive[ctx]=false;
-    if(btn){btn.classList.remove('on');btn.textContent='🎤';}
-    setTimeout(function(){if(status){status.textContent=ctx==='note'?'Tap':'';status.className='vstatus';}},2000);
-  };
-  r.onerror=function(){r.onend();};
-  micRec[ctx]=r; r.start();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// MORE MENU BUTTONS STYLE FIX
-// ═══════════════════════════════════════════════════════════════
-document.querySelectorAll('.mmBtn').forEach(function(btn){
-  btn.style.cssText='width:100%;padding:15px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-family:\'DM Sans\',sans-serif;font-size:15px;font-weight:500;color:var(--text);text-align:left;cursor:pointer;margin-bottom:9px;display:block;';
-});
-
-// ═══════════════════════════════════════════════════════════════
-// STARTUP
-// ═══════════════════════════════════════════════════════════════
-(function(){
-  var saved=localStorage.getItem('fUser');
-  if(saved){signIn(saved);}
-})();
-</script>
-
+    div.innerHTML='<div style="font-size:22px;">'+(em[s.quality]||'😐')+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:'+(tx[s.quality]||'var(--text)')+';">'+(s.quality?s.quality.charAt(0).
