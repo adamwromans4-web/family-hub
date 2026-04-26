@@ -710,6 +710,7 @@ var DB_DATA = {shop:{},notes:{},dayout:{},holiday:{},txs:{},goals:{},tasks:{},me
 // ═══════════════════════════════════════════════════════════════
 var DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 function signIn(u){
+  try {
   user=u; localStorage.setItem('fUser',u);
   document.getElementById('setup').classList.add('hide');
   document.getElementById('header').style.display='block';
@@ -727,6 +728,7 @@ function signIn(u){
   initMeals();
   goNav('schedule',document.querySelector('.nb'));
   startListeners();
+  } catch(e) { alert('Error in signIn: ' + e.message + ' at ' + e.stack); }
 }
 
 function signInCode(){
@@ -1363,4 +1365,3 @@ function renderSleep(){
     var key=e[0]; var s=e[1];
     var div=document.createElement('div');
     div.style.cssText='background:'+(bg[s.quality]||'var(--surface)')+';border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
-    div.innerHTML='<div style="font-size:22px;">'+(em[s.quality]||'😐')+'</div><div 
