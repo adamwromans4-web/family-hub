@@ -849,6 +849,58 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// Show setup or app immediately — don't wait for Firebase
+window.addEventListener('load', () => {
+  const user = localStorage.getItem('familyUser');
+  if (user) {
+    currentUser = user;
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-header').style.display = 'block';
+    document.getElementById('main-nav').style.display = 'flex';
+    const av = document.getElementById('user-av');
+    if (user === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
+    else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
+    const now = new Date();
+    document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+    const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const today = dayNames[now.getDay()];
+    if(DAYS.includes(today)) activeDay = today;
+    initDayTabs();
+    updateCatOptions();
+    showScreen('schedule', document.querySelector('.nav-item'));
+    // Connect Firebase in background
+    connectFirebase();
+  } else {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
+  }
+});
+
+function connectFirebase() {
+  try {
+    const defaultSchedule = getDefaultSchedule();
+    dbListen('schedule', data => { scheduleData = data ? mergeSchedule(defaultSchedule, data) : defaultSchedule; renderDay(); });
+    dbListen('shop', data => { shopItems = data || {}; renderShop(); });
+    dbListen('notes', data => { noteItems = data || {}; renderNotes(); });
+    dbListen('dayout', data => { dayoutItems = data || {}; renderIdeas('dayout'); });
+    dbListen('holiday', data => { holidayItems = data || {}; renderIdeas('holiday'); });
+    dbListen('transactions', data => { transactions = data || {}; renderBudget(); });
+    dbListen('goals', data => { goals = data || {}; renderGoals(); });
+    dbListen('tasks', data => { taskState = data || {}; renderTasks(); });
+    dbListen('meals', data => { mealData = data || {}; renderMealPlanner(); });
+    dbListen('health', data => { healthLog = data || {}; renderHealthLog(); });
+    dbListen('sleep', data => { sleepLog = data || {}; renderSleepLog(); });
+    dbListen('medicine', data => { medicineData = data || {}; renderMedicine(); });
+    dbListen('nightlog', data => { nightLogData = data || {}; renderNightLog(); });
+    dbListen('calendar', data => { calendarData = data || {}; renderCalendar(); });
+    dbListen('noticeboard', data => { noticeData = data || {}; renderNoticeboard(); });
+    dbListen('contacts', data => { contactsData = data || {}; renderContacts(); });
+    dbListen('babysitter', data => { babysitterData = data || {}; renderBabysitter(); });
+    dbListen('growth', data => { growthData = data || {}; renderGrowth(); });
+    dbListen('olivia-growth', data => { oliviaGrowthData = data || {}; renderOliviaGrowth(); });
+  } catch(e) { console.error('Firebase connection error:', e); }
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentUser = localStorage.getItem('familyUser') || null;
 let scheduleData = {};
@@ -896,9 +948,20 @@ window.signInAs = function(user) {
   currentUser = user;
   localStorage.setItem('familyUser', user);
   document.getElementById('setup-screen').style.display = 'none';
-  document.getElementById('setup-screen').classList.add('hidden');
-  document.getElementById('loading-screen').style.display = 'none';
-  initApp();
+  document.getElementById('main-header').style.display = 'block';
+  document.getElementById('main-nav').style.display = 'flex';
+  const av = document.getElementById('user-av');
+  if (user === 'adam') { av.textContent='AD'; av.style.background='#EFF6FF'; av.style.color='#2563EB'; }
+  else { av.textContent='KR'; av.style.background='#ECFDF5'; av.style.color='#059669'; }
+  const now = new Date();
+  document.getElementById('header-date').textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const today = dayNames[now.getDay()];
+  if(DAYS.includes(today)) activeDay = today;
+  initDayTabs();
+  updateCatOptions();
+  showScreen('schedule', document.querySelector('.nav-item'));
+  connectFirebase();
 };
 window.signInWithCode = function() {
   const code = document.getElementById('family-code-input').value.trim().toLowerCase();
@@ -2174,27 +2237,7 @@ window.addOliviaSpurtEntry = function() {
 window.removeOliviaGrowthEntry = function(key) { dbRemove('olivia-growth/'+key); };
 
 // ── START ─────────────────────────────────────────────────────────────────────
-
-function showSetup() {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('setup-screen').style.display = 'flex';
-  document.getElementById('setup-screen').classList.remove('hidden');
-}
-
-// Force show setup after 2 seconds no matter what
-const loadingTimeout = setTimeout(showSetup, 2000);
-
-try {
-  if(currentUser) {
-    clearTimeout(loadingTimeout);
-    initApp();
-  } else {
-    showSetup();
-  }
-} catch(err) {
-  console.error('App start error:', err);
-  showSetup();
-}
+// App startup is handled by window.addEventListener('load') above
 </script>
 </body>
 </html>
