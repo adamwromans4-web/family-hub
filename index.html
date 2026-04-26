@@ -673,6 +673,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE INIT
 // ═══════════════════════════════════════════════════════════════
+if(typeof firebase === 'undefined') {
+  alert('Firebase failed to load. Please check your internet connection and refresh.');
+} else {
 firebase.initializeApp({
   apiKey:"AIzaSyCPorlwE9Zl4M9jMS-SX9rVWEN2Z1Osxgg",
   authDomain:"our-family-hub-d104d.firebaseapp.com",
@@ -1360,4 +1363,4 @@ function renderSleep(){
     var key=e[0]; var s=e[1];
     var div=document.createElement('div');
     div.style.cssText='background:'+(bg[s.quality]||'var(--surface)')+';border:1px solid var(--border);border-radius:var(--rs);padding:11px 13px;margin-bottom:6px;display:flex;align-items:center;gap:10px;';
-    div.innerHTML='<div style="font-size:22px;">'+(em[s.quality]||'😐')+'</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:'+(tx[s.quality]||'var(--text)')+';">'+(s.quality?s.quality.charAt(0).
+    div.innerHTML='<div style="font-size:22px;">'+(em[s.quality]||'😐')+'</div><div 
