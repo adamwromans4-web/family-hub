@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0f172a">
+<title>Family Hub</title>
+
+
+<!-- Firebase Compat SDK -->
+
+<style>
+:root {
+  --adam: #3b82f6;
+  --adam-light: #dbeafe;
+  --kristal: #22c55e;
+  --kristal-light: #dcfce7;
+  --both: #a855f7;
+  --both-light: #f3e8ff;
+  --kids: #f59e0b;
+  --kids-light: #fef3c7;
+  --gym: #ef4444;
+  --gym-light: #fee2e2;
+  --helper: #f97316;
+  --helper-light: #ffedd5;
+  --rest: #6b7280;
+  --rest-light: #f3f4f6;
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #334155;
+  --border: #475569;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --nav-h: 64px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
+
+/* ── LOGIN ── */
+#login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; min-height: 100dvh; padding: 32px 24px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+#login-screen h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+#login-screen p { color: var(--text2); margin-bottom: 40px; font-size: 0.95rem; }
+.login-avatars { display: flex; gap: 16px; margin-bottom: 40px; }
+.login-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: white; }
+.login-btn { display: flex; align-items: center; gap: 16px; width: 100%; max-width: 320px; background: var(--surface); border: 2px solid var(--border); border-radius: 16px; padding: 18px 24px; margin-bottom: 14px; cursor: pointer; font-size: 1.05rem; font-weight: 600; color: var(--text); transition: all 0.2s; text-align: left; }
+.login-btn.adam-btn { border-color: var(--adam); }
+.login-btn.adam-btn:active { background: var(--adam); color: white; }
+.login-btn.kristal-btn { border-color: var(--kristal); }
+.login-btn.kristal-btn:active { background: var(--kristal); color: white; }
+.login-btn-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; flex-shrink: 0; }
+.code-section { margin-top: 20px; width: 100%; max-width: 320px; }
+.code-section details { color: var(--text2); font-size: 0.85rem; }
+.code-section summary { cursor: pointer; text-align: center; padding: 8px; }
+.code-inputs { display: flex; gap: 8px; margin-top: 12px; }
+.code-inputs input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; color: var(--text); font-size: 0.95rem; }
+.code-inputs button { background: var(--both); color: white; border: none; border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 600; }
+
+/* ── APP LAYOUT ── */
+#app { display: none; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+
+/* ── HEADER ── */
+header { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 16px; padding-top: max(10px, env(safe-area-inset-top)); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; }
+.header-left { display: flex; align-items: center; gap: 10px; }
+.header-title { font-size: 1.05rem; font-weight: 700; }
+.header-avatars { display: flex; gap: 6px; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; color: white; border: 2px solid transparent; }
+.avatar.me { border-color: white; }
+.sync-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rest); transition: background 0.3s; }
+.sync-dot.connected { background: var(--kristal); }
+.sync-dot.syncing { background: var(--kids); animation: pulse 0.8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── DUTY BANNER ── */
+#duty-banner { margin: 12px 16px 0; border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.duty-banner-inner { display: flex; align-items: center; gap: 10px; }
+.duty-icon { font-size: 1.5rem; }
+.duty-text { font-size: 0.9rem; font-weight: 700; }
+.duty-sub { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
+.witching-countdown { text-align: right; }
+.witching-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+.witching-time { font-size: 1.1rem; font-weight: 800; }
+.witching-active { animation: pulse 1.5s infinite; }
+
+/* ── MAIN ── */
+main { flex: 1; overflow-y: auto; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
+
+/* ── PULL TO REFRESH ── */
+#ptr-indicator { text-align: center; padding: 0; height: 0; overflow: hidden; color: var(--text2); font-size: 0.85rem; transition: height 0.2s, padding 0.2s; }
+#ptr-indicator.visible { height: 40px; padding: 10px; }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 16px; }
+.section.active { display: block; }
+
+/* ── BOTTOM NAV ── */
+nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: var(--surface); border-top: 1px solid var(--border); display: flex; height: var(--nav-h); padding-bottom: var(--safe-bottom); }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: none; color: var(--text2); cursor: pointer; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.02em; transition: color 0.15s; padding: 0; }
+.nav-btn svg { width: 22px; height: 22px; }
+.nav-btn.active { color: var(--adam); }
+
+/* ── FAB ── */
+#fab { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); right: 20px; z-index: 90; width: 56px; height: 56px; border-radius: 50%; background: var(--adam); color: white; font-size: 1.6rem; border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(59,130,246,0.5); display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+#fab:active { transform: scale(0.92); }
+#fab-menu { position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 82px); right: 20px; z-index: 89; display: none; flex-direction: column; gap: 10px; align-items: flex-end; }
+#fab-menu.open { display: flex; }
+.fab-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 10px 16px; cursor: pointer; font-size: 0.88rem; font-weight: 600; box-shadow: 0 2px 12px rgba(0,0,0,0.3); white-space: nowrap; }
+.fab-item:active { transform: scale(0.97); }
+.fab-overlay { display: none; position: fixed; inset: 0; z-index: 88; }
+.fab-overlay.open { display: block; }
+
+/* ── QUICK ADD MODAL ── */
+#quick-add-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; justify-content: center; }
+#quick-add-modal.open { display: flex; }
+.quick-modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + var(--safe-bottom)); width: 100%; max-width: 480px; }
+.quick-modal h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+.quick-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.quick-tab { flex: 1; padding: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--text2); text-align: center; }
+.quick-tab.active { background: var(--adam); color: white; border-color: var(--adam); }
+.quick-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-size: 0.95rem; margin-bottom: 12px; }
+.quick-input:focus { outline: none; border-color: var(--adam); }
+.quick-input::placeholder { color: var(--text2); }
+.quick-btns { display: flex; gap: 10px; }
+.quick-cancel { flex: 1; background: var(--surface2); color: var(--text2); border: none; border-radius: 12px; padding: 13px; cursor: pointer; font-weight: 600; }
+.quick-save { flex: 2; background: var(--adam); color: white; border: none; border-radius: 12px; padding: 13px; cursor: pointer; font-weight: 700; }
+
+/* ── PAGE TITLES ── */
+.page-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.5px; }
+.page-subtitle { font-size: 0.82rem; color: var(--text2); margin-bottom: 14px; }
+
+/* ── CARDS ── */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+.card-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 10px; }
+
+/* ── WEEK RESET BANNER ── */
+.week-reset-bar { display: flex; align-items: center; justify-content: space-between; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; margin-bottom: 14px; }
+.week-reset-text { font-size: 0.85rem; font-weight: 600; }
+.week-reset-sub { font-size: 0.72rem; color: var(--text2); }
+.reset-btn { background: var(--both); color: white; border: none; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; font-size: 0.82rem; white-space: nowrap; }
+
+/* ── DATE NIGHT BANNER ── */
+#date-night-banner { background: linear-gradient(135deg, #581c87, #7c3aed); border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; display: none; }
+.date-night-inner { display: flex; align-items: center; gap: 12px; }
+.date-night-icon { font-size: 1.8rem; }
+.date-night-text { font-size: 0.95rem; font-weight: 700; }
+.date-night-sub { font-size: 0.78rem; opacity: 0.85; margin-top: 2px; }
+
+/* ── SCHEDULE ── */
+.day-tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab { flex-shrink: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--text2); transition: all 0.15s; text-align: center; }
+.day-tab.active { background: var(--adam); color: white; border-color: var(--adam); }
+.today-badge { font-size: 0.58rem; display: block; font-weight: 400; opacity: 0.85; }
+.schedule-slot { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 12px; margin-bottom: 8px; border-left: 4px solid transparent; position: relative; transition: transform 0.15s; }
+.slot-time { font-size: 0.75rem; font-weight: 700; color: var(--text2); min-width: 44px; padding-top: 2px; }
+.slot-body { flex: 1; }
+.slot-label { font-size: 0.9rem; font-weight: 600; }
+.slot-who { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
+.slot-del { background: none; border: none; cursor: pointer; padding: 6px; color: var(--text2); font-size: 0.8rem; opacity: 0; transition: opacity 0.15s; border-radius: 8px; }
+.schedule-slot:hover .slot-del { opacity: 1; }
+.slot-adam { background: var(--adam-light); border-color: var(--adam); color: #1e3a5f; }
+.slot-kristal { background: var(--kristal-light); border-color: var(--kristal); color: #14532d; }
+.slot-both { background: var(--both-light); border-color: var(--both); color: #581c87; }
+.slot-kids { background: var(--kids-light); border-color: var(--kids); color: #78350f; }
+.slot-gym { background: var(--gym-light); border-color: var(--gym); color: #7f1d1d; }
+.slot-helper { background: var(--helper-light); border-color: var(--helper); color: #7c2d12; }
+.slot-rest { background: var(--rest-light); border-color: var(--rest); color: #374151; }
+.add-slot-btn { width: 100%; background: var(--surface); border: 2px dashed var(--border); border-radius: 12px; padding: 12px; color: var(--text2); font-size: 0.9rem; cursor: pointer; margin-top: 4px; transition: all 0.15s; font-weight: 500; }
+.add-slot-btn:hover { border-color: var(--adam); color: var(--adam); }
+
+/* ── TASKS ── */
+.task-group-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; margin-top: 16px; padding: 0 4px; display: flex; align-items: center; gap: 8px; }
+.task-group-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* swipe-to-delete wrapper */
+.swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 8px; }
+.swipe-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--gym); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; border-radius: 12px; }
+.task-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; transition: transform 0.2s; position: relative; z-index: 1; user-select: none; }
+.task-item.done { opacity: 0.5; }
+.task-item.done .task-label { text-decoration: line-through; }
+.task-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 0.75rem; }
+.task-check.checked { background: var(--kristal); border-color: var(--kristal); color: white; }
+.task-label { flex: 1; font-size: 0.9rem; }
+.task-del { background: none; border: none; cursor: pointer; color: var(--text2); padding: 4px 6px; border-radius: 6px; font-size: 0.85rem; flex-shrink: 0; }
+.task-del:hover { color: var(--gym); }
+
+/* ── SHOPPING ── */
+.add-bar { display: flex; gap: 10px; margin-bottom: 14px; }
+.add-bar input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; color: var(--text); font-size: 0.95rem; }
+.add-bar input:focus { outline: none; border-color: var(--adam); }
+.add-bar input::placeholder { color: var(--text2); }
+.add-bar button { background: var(--adam); color: white; border: none; border-radius: 12px; padding: 12px 16px; cursor: pointer; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
+.mic-btn { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; cursor: pointer; font-size: 1rem; flex-shrink: 0; transition: all 0.2s; }
+.mic-btn.listening { background: var(--gym); color: white; border-color: var(--gym); animation: pulse 1s infinite; }
+/* shop item with swipe */
+.shop-swipe-wrap { position: relative; overflow: hidden; border-radius: 12px; margin-bottom: 8px; }
+.shop-swipe-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--gym); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; border-radius: 12px; }
+.shop-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; position: relative; z-index: 1; transition: transform 0.2s; user-select: none; }
+.shop-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.shop-check.checked { background: var(--kristal); border-color: var(--kristal); color: white; }
+.shop-label { flex: 1; font-size: 0.95rem; }
+.shop-label.done { text-decoration: line-through; opacity: 0.5; }
+
+/* ── NOTES ── */
+.note-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.note-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.note-who { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.note-date { font-size: 0.7rem; color: var(--text2); }
+.note-text { font-size: 0.9rem; line-height: 1.5; white-space: pre-wrap; }
+.note-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.85rem; padding: 4px; border-radius: 6px; }
+
+/* ── SLEEP CHART ── */
+.sleep-chart-wrap { display: flex; gap: 3px; flex-wrap: wrap; padding: 4px 0 12px; }
+.sleep-dot { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; font-weight: 700; color: white; flex-shrink: 0; position: relative; cursor: default; }
+.sleep-dot.good { background: var(--kristal); }
+.sleep-dot.unsettled { background: var(--kids); }
+.sleep-dot.rough { background: var(--gym); }
+.sleep-dot.empty { background: var(--surface2); }
+.sleep-dot-date { font-size: 0.5rem; opacity: 0.8; display: block; margin-top: 1px; }
+.sleep-legend { display: flex; gap: 12px; font-size: 0.75rem; color: var(--text2); margin-bottom: 10px; }
+.sleep-legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 4px; }
+
+/* ── GROWTH CHART ── */
+.growth-chart-svg { width: 100%; height: 120px; display: block; }
+.growth-no-data { text-align: center; color: var(--text2); font-size: 0.85rem; padding: 20px 0; }
+
+/* ── MOOD LOG ── */
+.mood-btns { display: flex; gap: 8px; margin-bottom: 14px; }
+.mood-btn { flex: 1; font-size: 1.6rem; padding: 10px 4px; background: var(--surface); border: 2px solid var(--border); border-radius: 12px; cursor: pointer; text-align: center; transition: all 0.15s; }
+.mood-btn:active { transform: scale(0.92); }
+.mood-btn.selected { border-color: var(--kids); background: var(--kids-light); }
+.mood-entry { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
+.mood-emoji { font-size: 1.3rem; }
+.mood-detail { flex: 1; }
+.mood-ts { font-size: 0.7rem; color: var(--text2); }
+.mood-note { font-size: 0.85rem; }
+.mood-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+
+/* ── NAPPY / POTTY ── */
+.nappy-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+.nappy-btn { padding: 12px 4px; font-size: 0.75rem; font-weight: 700; border: 2px solid var(--border); border-radius: 12px; background: var(--surface); cursor: pointer; text-align: center; transition: transform 0.1s; }
+.nappy-btn:active { transform: scale(0.92); }
+.nappy-btn span { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+.nappy-success { border-color: var(--kristal); }
+.nappy-accident { border-color: var(--gym); }
+.nappy-dry { border-color: var(--adam); }
+.nappy-wet { border-color: var(--kids); }
+.nappy-entry { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 6px; }
+.nappy-tag { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.nappy-ts { font-size: 0.7rem; color: var(--text2); flex: 1; }
+.nappy-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+
+/* ── BAG CHECKLIST ── */
+.bag-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.bag-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.bag-title { font-weight: 700; font-size: 0.95rem; }
+.bag-reset-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 0.78rem; color: var(--text2); font-weight: 600; }
+.bag-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.bag-item:last-child { border-bottom: none; }
+.bag-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-size: 0.7rem; }
+.bag-check.checked { background: var(--kristal); border-color: var(--kristal); color: white; }
+.bag-label { flex: 1; font-size: 0.88rem; }
+.bag-label.done { text-decoration: line-through; opacity: 0.5; }
+.bag-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+
+/* ── MOMENT BOARD ── */
+.moment-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+.moment-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.moment-who-date { display: flex; flex-direction: column; gap: 2px; }
+.moment-who { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; }
+.moment-date { font-size: 0.7rem; color: var(--text2); padding: 2px 8px; }
+.moment-text { font-size: 0.95rem; line-height: 1.55; }
+.moment-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.85rem; padding: 4px; }
+
+/* ── MEAL PLANNER ── */
+.meal-day { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.meal-day-label { font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: var(--text2); }
+.meal-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 0.9rem; margin-bottom: 6px; }
+.meal-input:focus { outline: none; border-color: var(--kristal); }
+.meal-input::placeholder { color: var(--text2); }
+
+/* ── BUDGET ── */
+.toggle-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.toggle-btn { flex: 1; padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--text2); transition: all 0.15s; }
+.toggle-btn.active { background: var(--both); border-color: var(--both); color: white; }
+.budget-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.budget-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+.budget-stat-value { font-size: 1.3rem; font-weight: 800; }
+.budget-stat-label { font-size: 0.65rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+.budget-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
+.budget-item-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.budget-item-label { flex: 1; font-size: 0.9rem; }
+.budget-item-amount { font-weight: 700; font-size: 0.95rem; }
+.budget-item-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.85rem; padding: 4px; }
+.income-dot { background: var(--kristal); }
+.expense-dot { background: var(--gym); }
+.saving-dot { background: var(--adam); }
+.budget-add { display: grid; grid-template-columns: 1fr 80px; gap: 8px; margin-bottom: 8px; }
+.budget-add input, .budget-add select { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; color: var(--text); font-size: 0.85rem; }
+.budget-add input:focus { outline: none; border-color: var(--both); }
+.budget-add-row2 { display: flex; gap: 8px; margin-bottom: 12px; }
+.budget-add-row2 select { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px; color: var(--text); font-size: 0.85rem; }
+.budget-add-row2 button { background: var(--both); color: white; border: none; border-radius: 10px; padding: 10px 20px; cursor: pointer; font-weight: 700; }
+.chart-bar-wrap { margin-bottom: 12px; }
+.chart-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
+.chart-bar-bg { height: 12px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+.chart-bar-fill { height: 100%; border-radius: 6px; transition: width 0.5s; }
+.savings-goal { background: var(--surface); border: 1px solid var(--adam); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.savings-goal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.savings-goal-name { font-weight: 600; font-size: 0.9rem; }
+.savings-goal-amount { font-size: 0.8rem; color: var(--text2); }
+.savings-progress { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.savings-progress-bar { height: 100%; background: var(--adam); border-radius: 3px; transition: width 0.5s; }
+
+/* ── CALENDAR ── */
+.calendar-event { display: flex; align-items: flex-start; gap: 14px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 10px; }
+.cal-date { text-align: center; min-width: 40px; }
+.cal-day { font-size: 1.3rem; font-weight: 800; line-height: 1; }
+.cal-month { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text2); }
+.cal-body { flex: 1; }
+.cal-title { font-weight: 600; font-size: 0.95rem; }
+.cal-detail { font-size: 0.75rem; color: var(--text2); margin-top: 2px; }
+.cal-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.85rem; padding: 4px; }
+.add-event-form { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+.form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.form-row input, .form-row select { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; color: var(--text); font-size: 0.85rem; }
+.form-row input:focus { outline: none; border-color: var(--kids); }
+.form-row input::placeholder { color: var(--text2); }
+.form-submit { width: 100%; background: var(--kids); color: white; border: none; border-radius: 10px; padding: 12px; cursor: pointer; font-weight: 700; font-size: 0.95rem; }
+
+/* ── NOTICEBOARD ── */
+.notice-card { border-radius: 14px; padding: 14px; margin-bottom: 10px; border-left: 5px solid; background: var(--surface); }
+.notice-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.notice-title { font-weight: 700; font-size: 0.95rem; }
+.notice-due { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.notice-text { font-size: 0.85rem; color: var(--text2); }
+.notice-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.85rem; padding: 4px; }
+.notice-school { border-color: var(--kids); }
+.notice-nursery { border-color: var(--kristal); }
+.notice-family { border-color: var(--both); }
+.notice-overdue { border-color: var(--gym); }
+
+/* ── HEALTH / LOGS ── */
+.log-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+.log-timestamp { font-size: 0.7rem; color: var(--text2); margin-bottom: 4px; }
+.log-tag { font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; display: inline-block; margin-right: 6px; margin-bottom: 4px; color: white; }
+.log-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 2px 4px; float: right; }
+.sleep-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.sleep-btn { padding: 16px 8px; border: 2px solid; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 0.9rem; transition: transform 0.1s; background: var(--surface); }
+.sleep-btn:active { transform: scale(0.95); }
+.sleep-good { border-color: var(--kristal); color: #14532d; }
+.sleep-unsettled { border-color: var(--kids); color: #78350f; }
+.sleep-rough { border-color: var(--gym); color: #7f1d1d; }
+.sleep-rating-good { background: var(--kristal); }
+.sleep-rating-unsettled { background: var(--kids); }
+.sleep-rating-rough { background: var(--gym); }
+
+/* ── GROWTH TRACKER ── */
+.growth-entry { display: flex; gap: 12px; align-items: center; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
+.growth-date { font-size: 0.75rem; color: var(--text2); min-width: 70px; }
+.growth-vals { display: flex; gap: 12px; flex: 1; }
+.growth-val { font-size: 0.85rem; font-weight: 600; }
+.growth-val span { font-size: 0.7rem; font-weight: 400; color: var(--text2); }
+.growth-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+.signs-panel { background: var(--both-light); border: 1px solid var(--both); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.signs-panel h4 { font-size: 0.78rem; font-weight: 700; color: #581c87; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+.signs-list { font-size: 0.85rem; color: #581c87; line-height: 1.8; }
+
+/* ── MEDICINE ── */
+.med-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.med-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.med-name { font-weight: 700; font-size: 1rem; }
+.med-stock { font-size: 0.7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.stock-ok { background: var(--kristal-light); color: #14532d; }
+.stock-low { background: var(--kids-light); color: #78350f; }
+.stock-out { background: var(--gym-light); color: #7f1d1d; }
+.med-details { font-size: 0.8rem; color: var(--text2); line-height: 1.6; }
+.med-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+
+/* ── NIGHT LOG ── */
+.night-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.night-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.night-date { font-size: 0.75rem; color: var(--text2); }
+.night-who { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.night-text { font-size: 0.9rem; line-height: 1.5; }
+.night-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 0.8rem; padding: 4px; }
+
+/* ── EMERGENCY ── */
+.emergency-fixed { background: var(--gym-light); border: 2px solid var(--gym); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+.emergency-fixed h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7f1d1d; margin-bottom: 10px; }
+.ec-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(239,68,68,0.2); }
+.ec-item:last-child { border-bottom: none; }
+.ec-name { font-weight: 700; font-size: 0.95rem; color: #7f1d1d; }
+.ec-role-text { font-size: 0.75rem; color: #7f1d1d; opacity: 0.8; }
+.ec-call { background: var(--gym); color: white; border: none; border-radius: 10px; padding: 8px 16px; cursor: pointer; font-weight: 700; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.ec-personal { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.ec-call-btn { background: var(--adam); color: white; border: none; border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 700; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+
+/* ── GRANDMA ── */
+.grandma-section { background: var(--kids-light); border: 1px solid var(--kids); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.grandma-section h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #78350f; margin-bottom: 10px; }
+.grandma-routine { font-size: 0.88rem; color: #78350f; line-height: 1.8; }
+
+/* ── WITCHING HOUR ── */
+.witching-info { background: var(--helper-light); border: 1px solid var(--helper); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+.witching-info h4 { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #7c2d12; margin-bottom: 8px; }
+.witching-info p { font-size: 0.85rem; color: #7c2d12; line-height: 1.6; }
+.witching-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.witching-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.witching-card h5 { font-size: 0.75rem; font-weight: 700; color: var(--helper); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.witching-list { font-size: 0.82rem; color: var(--text2); line-height: 1.8; }
+
+/* ── DAYS OUT ── */
+.days-out-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
+.days-out-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.days-out-check.checked { background: var(--kids); border-color: var(--kids); color: white; }
+.days-out-label { flex: 1; font-size: 0.9rem; }
+.days-out-label.done { text-decoration: line-through; opacity: 0.5; }
+.days-out-del { background: none; border: none; cursor: pointer; color: var(--text2); font-size: 1rem; padding: 4px; }
+
+/* ── MORE MENU ── */
+.more-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 0; }
+.more-item { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 14px; cursor: pointer; transition: all 0.15s; text-align: center; }
+.more-item:active { transform: scale(0.97); border-color: var(--adam); }
+.more-item-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.more-item-label { font-size: 0.82rem; font-weight: 700; }
+.more-item-sub { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+
+/* ── BACK BTN ── */
+.back-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; color: var(--text2); cursor: pointer; font-size: 0.9rem; font-weight: 600; padding: 0; margin-bottom: 16px; }
+.back-btn:hover { color: var(--text); }
+
+/* ── MODALS ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: flex-end; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 20px; padding-bottom: calc(20px + var(--safe-bottom)); width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+.modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 16px; }
+.modal-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--text); font-size: 0.9rem; margin-bottom: 10px; }
+.modal-input:focus { outline: none; border-color: var(--adam); }
+.modal-input::placeholder { color: var(--text2); }
+.modal-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: var(--text); font-size: 0.9rem; margin-bottom: 10px; }
+.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.modal-btns { display: flex; gap: 10px; margin-top: 6px; }
+.modal-cancel { flex: 1; background: var(--surface2); color: var(--text2); border: none; border-radius: 12px; padding: 13px; cursor: pointer; font-weight: 600; }
+.modal-save { flex: 2; background: var(--adam); color: white; border: none; border-radius: 12px; padding: 13px; cursor: pointer; font-weight: 700; font-size: 0.95rem; }
+textarea.modal-input { min-height: 80px; resize: vertical; }
+
+/* ── MISC ── */
+.empty { text-align: center; color: var(--text2); font-size: 0.9rem; padding: 24px 16px; }
+.mt12 { margin-top: 12px; }
+.mt16 { margin-top: 16px; }
+.mb12 { margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-avatars">
+    <div class="login-avatar" style="background:var(--adam)">AD</div>
+    <div class="login-avatar" style="background:var(--kristal)">KR</div>
+    <div class="login-avatar" style="background:var(--kids)">AU</div>
+    <div class="login-avatar" style="background:var(--both)">OL</div>
+  </div>
+  <h1>🏠 Family Hub</h1>
+  <p>The Romans family dashboard</p>
+  <button class="login-btn adam-btn" onclick="doLogin('adam')">
+    <div class="login-btn-avatar" style="background:var(--adam)">AD</div>
+    <div><div>I'm Adam</div><div style="font-size:0.75rem;font-weight:400;opacity:0.7">Works 8–5, gym MWF</div></div>
+  </button>
+  <button class="login-btn kristal-btn" onclick="doLogin('kristal')">
+    <div class="login-btn-avatar" style="background:var(--kristal)">KR</div>
+    <div><div>I'm Kristal</div><div style="font-size:0.75rem;font-weight:400;opacity:0.7">Works from home, nights MWFSaSu</div></div>
+  </button>
+  <div class="code-section">
+    <details><summary>Enter family code instead</summary>
+      <div class="code-inputs">
+        <input type="text" id="code-input" placeholder="adam or kristal" />
+        <button onclick="doCodeLogin()">Go</button>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <div class="header-title">🏠 Family Hub</div>
+        <div class="sync-dot" id="sync-dot"></div>
+      </div>
+      <div class="header-avatars">
+        <div class="avatar" id="av-adam" style="background:var(--adam)">AD</div>
+        <div class="avatar" id="av-kristal" style="background:var(--kristal)">KR</div>
+        <div class="avatar" style="background:var(--kids)">AU</div>
+        <div class="avatar" style="background:var(--both)">OL</div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div id="ptr-indicator">↓ Release to refresh</div>
+
+    <!-- DUTY BANNER (shown on all pages) -->
+    <div id="duty-banner">
+      <div class="duty-banner-inner">
+        <div class="duty-icon" id="duty-icon">🌙</div>
+        <div>
+          <div class="duty-text" id="duty-text">Loading...</div>
+          <div class="duty-sub" id="duty-sub"></div>
+        </div>
+      </div>
+      <div class="witching-countdown" id="witching-wrap">
+        <div class="witching-label">Witching hour</div>
+        <div class="witching-time" id="witching-time">—</div>
+      </div>
+    </div>
+
+    <!-- DATE NIGHT BANNER -->
+    <div id="date-night-banner">
+      <div class="date-night-inner">
+        <div class="date-night-icon">🌹</div>
+        <div>
+          <div class="date-night-text" id="date-night-text">Date night this Wednesday!</div>
+          <div class="date-night-sub">Grandma Nicky is babysitting 💕</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div class="section active" id="sec-schedule">
+      <div class="page-title">📅 Weekly Schedule</div>
+      <div class="day-tabs" id="day-tabs"></div>
+      <div id="schedule-slots"></div>
+      <button class="add-slot-btn" onclick="openAddSlot()">+ Add slot</button>
+    </div>
+
+    <!-- TASKS -->
+    <div class="section" id="sec-tasks">
+      <div class="page-title">✅ Tasks</div>
+      <div class="week-reset-bar">
+        <div><div class="week-reset-text">Weekly tasks</div><div class="week-reset-sub" id="week-reset-sub">Resets automatically each Monday</div></div>
+        <button class="reset-btn" onclick="resetTasks()">Reset week</button>
+      </div>
+      <div id="tasks-container"></div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <input type="text" id="new-task-input" placeholder="New task..." style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;" onkeydown="if(event.key==='Enter')addTask()"/>
+        <select id="new-task-who" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:0.85rem;">
+          <option value="adam">Adam</option>
+          <option value="kristal">Kristal</option>
+          <option value="both">Both</option>
+        </select>
+        <button onclick="addTask()" style="background:var(--adam);color:white;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;font-weight:700;">+</button>
+      </div>
+    </div>
+
+    <!-- SHOPPING -->
+    <div class="section" id="sec-shopping">
+      <div class="page-title">🛒 Shopping List</div>
+      <div class="add-bar">
+        <input type="text" id="shop-input" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem()"/>
+        <button class="mic-btn" id="shop-mic" onclick="startVoice('shop-input','shop-mic')">🎤</button>
+        <button onclick="addShopItem()">Add</button>
+      </div>
+      <div id="shop-list"></div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="section" id="sec-notes">
+      <div class="page-title">📝 Notes</div>
+      <div style="margin-bottom:14px;">
+        <textarea id="note-input" placeholder="Type a note..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;resize:none;height:80px;display:block;margin-bottom:8px;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <button class="mic-btn" id="note-mic" onclick="startVoice('note-input','note-mic')" style="flex-shrink:0;">🎤</button>
+          <button onclick="addNote()" style="flex:1;background:var(--kristal);color:white;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;font-weight:700;">Save Note</button>
+        </div>
+      </div>
+      <div id="notes-list"></div>
+    </div>
+
+    <!-- MORE -->
+    <div class="section" id="sec-more">
+      <div class="page-title">More</div>
+      <div class="more-grid">
+        <div class="more-item" onclick="showSubsection('meals')"><div class="more-item-icon">🍽️</div><div class="more-item-label">Meal Planner</div><div class="more-item-sub">What's for tea?</div></div>
+        <div class="more-item" onclick="showSubsection('budget')"><div class="more-item-icon">💰</div><div class="more-item-label">Budget</div><div class="more-item-sub">Income & spending</div></div>
+        <div class="more-item" onclick="showSubsection('calendar')"><div class="more-item-icon">📆</div><div class="more-item-label">Calendar</div><div class="more-item-sub">Events & dates</div></div>
+        <div class="more-item" onclick="showSubsection('noticeboard')"><div class="more-item-icon">📌</div><div class="more-item-label">Noticeboard</div><div class="more-item-sub">Reminders</div></div>
+        <div class="more-item" onclick="showSubsection('austin-health')"><div class="more-item-icon">🤒</div><div class="more-item-label">Austin's Health</div><div class="more-item-sub">Symptoms & meds</div></div>
+        <div class="more-item" onclick="showSubsection('austin-sleep')"><div class="more-item-icon">😴</div><div class="more-item-label">Austin's Sleep</div><div class="more-item-sub">Track nights</div></div>
+        <div class="more-item" onclick="showSubsection('austin-growth')"><div class="more-item-icon">📏</div><div class="more-item-label">Austin's Growth</div><div class="more-item-sub">Height & weight</div></div>
+        <div class="more-item" onclick="showSubsection('olivia-growth')"><div class="more-item-icon">🌸</div><div class="more-item-label">Olivia's Growth</div><div class="more-item-sub">Tween tracker</div></div>
+        <div class="more-item" onclick="showSubsection('austin-mood')"><div class="more-item-icon">😊</div><div class="more-item-label">Austin's Mood</div><div class="more-item-sub">Daily emoji log</div></div>
+        <div class="more-item" onclick="showSubsection('nappy')"><div class="more-item-icon">🚽</div><div class="more-item-label">Potty Tracker</div><div class="more-item-sub">Potty training</div></div>
+        <div class="more-item" onclick="showSubsection('bags')"><div class="more-item-icon">🎒</div><div class="more-item-label">Bag Checklists</div><div class="more-item-sub">Nursery & school</div></div>
+        <div class="more-item" onclick="showSubsection('moments')"><div class="more-item-icon">⭐</div><div class="more-item-label">Family Moments</div><div class="more-item-sub">Memory board</div></div>
+        <div class="more-item" onclick="showSubsection('medicine')"><div class="more-item-icon">💊</div><div class="more-item-label">Medicine Cabinet</div><div class="more-item-sub">Stock & expiry</div></div>
+        <div class="more-item" onclick="showSubsection('night-log')"><div class="more-item-icon">🌙</div><div class="more-item-label">Night Log</div><div class="more-item-sub">Overnight notes</div></div>
+        <div class="more-item" onclick="showSubsection('emergency')"><div class="more-item-icon">🚨</div><div class="more-item-label">Emergency</div><div class="more-item-sub">Contacts & NHS</div></div>
+        <div class="more-item" onclick="showSubsection('grandma')"><div class="more-item-icon">👵</div><div class="more-item-label">Grandma Nicky</div><div class="more-item-sub">Babysitter notes</div></div>
+        <div class="more-item" onclick="showSubsection('witching')"><div class="more-item-icon">😤</div><div class="more-item-label">4pm Plan</div><div class="more-item-sub">Witching hour</div></div>
+        <div class="more-item" onclick="showSubsection('daysout')"><div class="more-item-icon">🗺️</div><div class="more-item-label">Days Out</div><div class="more-item-sub">Ideas & holidays</div></div>
+      </div>
+      <button onclick="doLogout()" style="width:100%;margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;color:var(--text2);cursor:pointer;font-size:0.9rem;">Sign out</button>
+    </div>
+
+    <!-- MEALS -->
+    <div class="section" id="sec-meals">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🍽️ Meal Planner</div>
+      <div id="meal-planner-container"></div>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="section" id="sec-budget">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">💰 Budget</div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="budget-weekly-btn" onclick="setBudgetMode('weekly')">Weekly</button>
+        <button class="toggle-btn" id="budget-monthly-btn" onclick="setBudgetMode('monthly')">Monthly</button>
+      </div>
+      <div class="budget-summary" id="budget-summary"></div>
+      <div class="card">
+        <div class="card-title">Add Entry</div>
+        <div class="budget-add">
+          <input type="text" id="budget-label" placeholder="Label..." />
+          <input type="number" id="budget-amount" placeholder="£0" step="0.01" min="0" />
+        </div>
+        <div class="budget-add-row2">
+          <select id="budget-type"><option value="income">Income</option><option value="expense">Expense</option><option value="saving">Saving</option></select>
+          <button onclick="addBudgetEntry()">Add</button>
+        </div>
+      </div>
+      <div id="budget-chart" class="card" style="margin-bottom:12px;"></div>
+      <div id="budget-list"></div>
+      <div class="card mt16">
+        <div class="card-title">Savings Goals</div>
+        <div id="savings-goals-list"></div>
+        <div class="form-row">
+          <input type="text" id="goal-name" placeholder="Goal name..." />
+          <input type="number" id="goal-target" placeholder="Target £" />
+          <input type="number" id="goal-saved" placeholder="Saved £" />
+        </div>
+        <button class="form-submit" style="background:var(--adam)" onclick="addSavingsGoal()">Add Goal</button>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="section" id="sec-calendar">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">📆 Family Calendar</div>
+      <div class="add-event-form">
+        <div class="card-title">Add Event</div>
+        <div class="form-row"><input type="text" id="cal-title" placeholder="Event name..." /><input type="date" id="cal-date" /></div>
+        <div class="form-row"><input type="text" id="cal-detail" placeholder="Notes / who / time..." /></div>
+        <button class="form-submit" onclick="addCalEvent()">Add to Calendar</button>
+      </div>
+      <div id="calendar-list"></div>
+    </div>
+
+    <!-- NOTICEBOARD -->
+    <div class="section" id="sec-noticeboard">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">📌 Noticeboard</div>
+      <div class="add-bar">
+        <input type="text" id="notice-input" placeholder="Notice..." onkeydown="if(event.key==='Enter')addNotice()" />
+        <button class="mic-btn" id="notice-mic" onclick="startVoice('notice-input','notice-mic')">🎤</button>
+        <button onclick="addNotice()">Add</button>
+      </div>
+      <div class="form-row" style="margin-bottom:12px;">
+        <input type="date" id="notice-due" />
+        <select id="notice-type" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-size:0.85rem;">
+          <option value="school">🎒 School</option>
+          <option value="nursery">🧸 Nursery</option>
+          <option value="family">👨‍👩‍👧‍👦 Family</option>
+        </select>
+      </div>
+      <div id="notice-list"></div>
+    </div>
+
+    <!-- AUSTIN HEALTH -->
+    <div class="section" id="sec-austin-health">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🤒 Austin's Health</div>
+      <div class="card">
+        <div class="card-title">Log Entry</div>
+        <div class="form-row">
+          <select class="modal-select" id="health-type" style="margin-bottom:0;">
+            <option value="symptom">Symptom</option>
+            <option value="temperature">Temperature</option>
+            <option value="medicine">Medicine</option>
+            <option value="note">General note</option>
+          </select>
+          <input type="text" class="modal-input" id="health-detail" placeholder="Details..." style="margin-bottom:0;" />
+        </div>
+        <button class="form-submit" style="margin-top:10px;background:var(--kids)" onclick="addHealthLog()">Log Entry</button>
+      </div>
+      <div id="health-log-list"></div>
+    </div>
+
+    <!-- AUSTIN SLEEP -->
+    <div class="section" id="sec-austin-sleep">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">😴 Austin's Sleep</div>
+      <div class="sleep-btns">
+        <button class="sleep-btn sleep-good" onclick="addSleepLog('Good')">😊<br>Good</button>
+        <button class="sleep-btn sleep-unsettled" onclick="addSleepLog('Unsettled')">😐<br>Unsettled</button>
+        <button class="sleep-btn sleep-rough" onclick="addSleepLog('Rough')">😫<br>Rough</button>
+      </div>
+      <div class="add-bar" style="margin-bottom:16px;">
+        <input type="text" id="sleep-note" placeholder="Optional note..." />
+      </div>
+      <div class="card">
+        <div class="card-title">Last 30 nights</div>
+        <div class="sleep-legend">
+          <span><span class="sleep-legend-dot" style="background:var(--kristal)"></span>Good</span>
+          <span><span class="sleep-legend-dot" style="background:var(--kids)"></span>Unsettled</span>
+          <span><span class="sleep-legend-dot" style="background:var(--gym)"></span>Rough</span>
+          <span><span class="sleep-legend-dot" style="background:var(--surface2)"></span>No data</span>
+        </div>
+        <div class="sleep-chart-wrap" id="sleep-chart"></div>
+      </div>
+      <div id="sleep-log-list"></div>
+    </div>
+
+    <!-- AUSTIN GROWTH -->
+    <div class="section" id="sec-austin-growth">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">📏 Austin's Growth</div>
+      <div class="signs-panel">
+        <h4>🌱 Growth Spurt Signs (Toddler)</h4>
+        <div class="signs-list">• Increased hunger & cluster feeding<br>• Extra clinginess or fussiness<br>• Sleep disruption (more waking)<br>• Clothes/shoes suddenly too small<br>• Developmental leap (new words, skills)<br>• Wanting more milk/snacks than usual</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Log Measurement</div>
+        <div class="form-row">
+          <input type="number" id="austin-height" placeholder="Height (cm)" step="0.1" min="0" />
+          <input type="number" id="austin-weight" placeholder="Weight (kg)" step="0.1" min="0" />
+          <input type="date" id="austin-growth-date" />
+        </div>
+        <button class="form-submit" style="background:var(--kids)" onclick="addGrowthEntry('austin')">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Height over time (cm)</div>
+        <div id="austin-height-chart"></div>
+      </div>
+      <div id="austin-growth-list"></div>
+    </div>
+
+    <!-- OLIVIA GROWTH -->
+    <div class="section" id="sec-olivia-growth">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🌸 Olivia's Growth</div>
+      <div class="signs-panel" style="background:var(--both-light);border-color:var(--both);">
+        <h4 style="color:#581c87;">🌺 Pre-teen Development (Age 11–14)</h4>
+        <div class="signs-list" style="color:#581c87;">• Growth spurts — can grow 6–8cm in a year<br>• Breast development beginning<br>• Body hair changes<br>• Skin changes / spots<br>• Mood swings & emotional intensity<br>• Increased need for privacy & independence<br>• Menstrual cycle may begin<br>• Greater peer awareness & social focus</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Log Measurement</div>
+        <div class="form-row">
+          <input type="number" id="olivia-height" placeholder="Height (cm)" step="0.1" min="0" />
+          <input type="number" id="olivia-weight" placeholder="Weight (kg)" step="0.1" min="0" />
+          <input type="date" id="olivia-growth-date" />
+        </div>
+        <button class="form-submit" style="background:var(--both)" onclick="addGrowthEntry('olivia')">Save</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Height over time (cm)</div>
+        <div id="olivia-height-chart"></div>
+      </div>
+      <div id="olivia-growth-list"></div>
+    </div>
+
+    <!-- AUSTIN MOOD -->
+    <div class="section" id="sec-austin-mood">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">😊 Austin's Mood</div>
+      <div class="card">
+        <div class="card-title">How's Austin today?</div>
+        <div class="mood-btns">
+          <button class="mood-btn" onclick="selectMood('😄')" id="mood-btn-0">😄</button>
+          <button class="mood-btn" onclick="selectMood('😊')" id="mood-btn-1">😊</button>
+          <button class="mood-btn" onclick="selectMood('😐')" id="mood-btn-2">😐</button>
+          <button class="mood-btn" onclick="selectMood('😤')" id="mood-btn-3">😤</button>
+          <button class="mood-btn" onclick="selectMood('😫')" id="mood-btn-4">😫</button>
+        </div>
+        <input type="text" id="mood-note" placeholder="Optional note..." class="modal-input" style="margin-bottom:10px;" />
+        <button class="form-submit" style="background:var(--kids)" onclick="saveMood()">Log Mood</button>
+      </div>
+      <div id="mood-list"></div>
+    </div>
+
+    <!-- NAPPY / POTTY -->
+    <div class="section" id="sec-nappy">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🚽 Potty Tracker</div>
+      <div class="card">
+        <div class="card-title">Log now</div>
+        <div class="nappy-btns">
+          <button class="nappy-btn nappy-success" onclick="addNappyLog('Success')"><span>🎉</span>Success</button>
+          <button class="nappy-btn nappy-accident" onclick="addNappyLog('Accident')"><span>💧</span>Accident</button>
+          <button class="nappy-btn nappy-dry" onclick="addNappyLog('Dry night')"><span>⭐</span>Dry night</button>
+          <button class="nappy-btn nappy-wet" onclick="addNappyLog('Wet nappy')"><span>🟡</span>Wet nappy</button>
+        </div>
+        <input type="text" id="nappy-note" placeholder="Optional note..." class="modal-input" style="margin-bottom:0;" />
+      </div>
+      <div id="nappy-list"></div>
+    </div>
+
+    <!-- BAG CHECKLISTS -->
+    <div class="section" id="sec-bags">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🎒 Bag Checklists</div>
+      <div class="bag-section">
+        <div class="bag-header">
+          <div class="bag-title">🧸 Austin's Nursery Bag</div>
+          <button class="bag-reset-btn" onclick="resetBag('austin')">Reset all</button>
+        </div>
+        <div id="austin-bag-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <input type="text" id="austin-bag-input" placeholder="Add item..." style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:0.88rem;" onkeydown="if(event.key==='Enter')addBagItem('austin')" />
+          <button onclick="addBagItem('austin')" style="background:var(--kids);color:white;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:700;">+</button>
+        </div>
+      </div>
+      <div class="bag-section">
+        <div class="bag-header">
+          <div class="bag-title">🎒 Olivia's School Bag</div>
+          <button class="bag-reset-btn" onclick="resetBag('olivia')">Reset all</button>
+        </div>
+        <div id="olivia-bag-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <input type="text" id="olivia-bag-input" placeholder="Add item..." style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:0.88rem;" onkeydown="if(event.key==='Enter')addBagItem('olivia')" />
+          <button onclick="addBagItem('olivia')" style="background:var(--both);color:white;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;font-weight:700;">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAMILY MOMENTS -->
+    <div class="section" id="sec-moments">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">⭐ Family Moments</div>
+      <div class="page-subtitle">A permanent record of lovely things worth remembering</div>
+      <div style="margin-bottom:14px;">
+        <textarea id="moment-input" placeholder="Write a moment to remember..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;resize:none;height:90px;display:block;margin-bottom:8px;"></textarea>
+        <button onclick="addMoment()" style="width:100%;background:linear-gradient(135deg,var(--kids),var(--helper));color:white;border:none;border-radius:12px;padding:13px;cursor:pointer;font-weight:700;font-size:0.95rem;">✨ Save Moment</button>
+      </div>
+      <div id="moments-list"></div>
+    </div>
+
+    <!-- MEDICINE -->
+    <div class="section" id="sec-medicine">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">💊 Medicine Cabinet</div>
+      <div class="card">
+        <div class="card-title">Add Medicine</div>
+        <div class="form-row"><input type="text" id="med-name" placeholder="Medicine name..." /><input type="text" id="med-dose" placeholder="Dose..." /></div>
+        <div class="form-row">
+          <input type="date" id="med-expiry" />
+          <select id="med-stock" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;color:var(--text);font-size:0.85rem;">
+            <option value="ok">Stock: OK</option>
+            <option value="low">Stock: Low</option>
+            <option value="out">Stock: Out</option>
+          </select>
+        </div>
+        <button class="form-submit" style="background:var(--both)" onclick="addMedicine()">Add</button>
+      </div>
+      <div id="medicine-list"></div>
+    </div>
+
+    <!-- NIGHT LOG -->
+    <div class="section" id="sec-night-log">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🌙 Night Log</div>
+      <div style="margin-bottom:14px;">
+        <textarea id="night-input" placeholder="How was the night? Any wake-ups, issues, times..." style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;resize:none;height:80px;display:block;margin-bottom:8px;"></textarea>
+        <button onclick="addNightLog()" style="width:100%;background:var(--both);color:white;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;font-weight:700;">Log Night</button>
+      </div>
+      <div id="night-log-list"></div>
+    </div>
+
+    <!-- EMERGENCY -->
+    <div class="section" id="sec-emergency">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🚨 Emergency Contacts</div>
+      <div class="emergency-fixed">
+        <h4>NHS & Emergency Services</h4>
+        <div class="ec-item"><div><div class="ec-name">🚑 Emergency Services</div><div class="ec-role-text">Police, Fire, Ambulance</div></div><a href="tel:999" class="ec-call">Call 999</a></div>
+        <div class="ec-item"><div><div class="ec-name">🏥 NHS 111</div><div class="ec-role-text">Non-emergency medical</div></div><a href="tel:111" class="ec-call">Call 111</a></div>
+        <div class="ec-item"><div><div class="ec-name">☎️ Samaritans</div><div class="ec-role-text">Mental health crisis</div></div><a href="tel:116123" class="ec-call">Call 116 123</a></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Add Personal Contact</div>
+        <div class="form-row"><input type="text" id="ec-name" placeholder="Name..." /><input type="text" id="ec-role-input" placeholder="Role..." /></div>
+        <div class="form-row"><input type="tel" id="ec-phone" placeholder="Phone number..." /></div>
+        <button class="form-submit" style="background:var(--adam)" onclick="addEmergencyContact()">Add Contact</button>
+      </div>
+      <div id="emergency-personal-list"></div>
+    </div>
+
+    <!-- GRANDMA NICKY -->
+    <div class="section" id="sec-grandma">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">👵 Grandma Nicky Notes</div>
+      <div class="grandma-section">
+        <h4>Austin's Routine</h4>
+        <div class="grandma-routine">
+          🕖 <b>5pm-ish:</b> Tired & hungry — offer a small snack<br>
+          🛁 <b>7pm:</b> Bath time — water not too hot, loves bubbles<br>
+          👕 <b>7:20pm:</b> PJs, nappy, brush teeth (star song!)<br>
+          📚 <b>7:30pm:</b> 2 stories max — stay firm!<br>
+          🌙 <b>7:45pm:</b> Into cot — blue teddy & white noise on<br>
+          🍼 <b>Milk:</b> Warm, about 5oz, before stories<br>
+          😴 <b>Nap:</b> He doesn't nap — don't let him fall asleep early!<br>
+          🍎 <b>Food:</b> No allergies. Loves cheese, hates cucumber.<br>
+          📞 <b>Kristal's mobile:</b> Call if anything worrying
+        </div>
+      </div>
+      <div class="card mt16">
+        <div class="card-title">Extra Notes for Nicky</div>
+        <textarea id="grandma-note-input" placeholder="Add a note for Grandma Nicky..." style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;resize:none;height:80px;display:block;margin-bottom:8px;"></textarea>
+        <button onclick="addGrandmaNote()" style="width:100%;background:var(--kids);color:white;border:none;border-radius:12px;padding:12px;cursor:pointer;font-weight:700;">Save Note</button>
+      </div>
+      <div id="grandma-notes-list"></div>
+    </div>
+
+    <!-- WITCHING HOUR -->
+    <div class="section" id="sec-witching">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">😤 4pm Witching Hour</div>
+      <div class="witching-info">
+        <h4>What is Restraint Collapse?</h4>
+        <p>Austin holds it together all day at nursery. When he gets home he releases all that tension — this is <b>restraint collapse</b>. It's not bad behaviour, it's exhaustion coming out safely. Best response: <b>calm, empathetic, low demand.</b></p>
+      </div>
+      <div class="witching-grid">
+        <div class="witching-card"><h5>📅 4pm Schedule</h5><div class="witching-list">4:00 — Low-key welcome<br>4:10 — Snack immediately<br>4:30 — Free play / TV OK<br>5:00 — Tea time<br>5:30 — Quiet time<br>6:30 — Wind-down<br>7:00 — Bath</div></div>
+        <div class="witching-card"><h5>🍎 Snack Ideas</h5><div class="witching-list">• Banana & peanut butter<br>• Cheese & crackers<br>• Breadsticks & hummus<br>• Apple slices<br>• Oatcakes<br>• Raisins & rice cakes<br>• Milk & a biscuit</div></div>
+        <div class="witching-card"><h5>🎮 Low-demand Activities</h5><div class="witching-list">• Playdough<br>• Sticker books<br>• Duplo<br>• Sensory bin<br>• Water play<br>• Drawing<br>• CBeebies</div></div>
+        <div class="witching-card"><h5>⚠️ Avoid at 4pm</h5><div class="witching-list">• Errands / shopping<br>• Lots of instructions<br>• Noisy environments<br>• Overstimulating play<br>• Saying no repeatedly<br>• Screen transitions<br>• Rushing</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Reminders</div>
+        <div class="witching-list" style="line-height:2;">
+          ✅ Stay calm — your calm is contagious<br>
+          ✅ Acknowledge feelings: "I can see you're really tired"<br>
+          ✅ Don't escalate — match with lower energy<br>
+          ✅ Offer a snack before anything else<br>
+          ✅ Low demands, simple choices only<br>
+          ✅ Physical comfort if he wants it<br>
+          ✅ This passes — usually within 20 minutes
+        </div>
+      </div>
+    </div>
+
+    <!-- DAYS OUT -->
+    <div class="section" id="sec-daysout">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🗺️ Days Out & Holidays</div>
+      <div class="card">
+        <div class="card-title">Days Out Ideas</div>
+        <div class="add-bar">
+          <input type="text" id="dayout-input" placeholder="Add idea..." onkeydown="if(event.key==='Enter')addDaysOut('dayout')" />
+          <button class="mic-btn" id="dayout-mic" onclick="startVoice('dayout-input','dayout-mic')">🎤</button>
+          <button onclick="addDaysOut('dayout')">Add</button>
+        </div>
+        <div id="dayout-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Holiday Ideas</div>
+        <div class="add-bar">
+          <input type="text" id="holiday-input" placeholder="Add idea..." onkeydown="if(event.key==='Enter')addDaysOut('holiday')" />
+          <button class="mic-btn" id="holiday-mic" onclick="startVoice('holiday-input','holiday-mic')">🎤</button>
+          <button onclick="addDaysOut('holiday')">Add</button>
+        </div>
+        <div id="holiday-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav>
+    <button class="nav-btn active" id="nav-schedule" onclick="showSection('schedule')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule
+    </button>
+    <button class="nav-btn" id="nav-tasks" onclick="showSection('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Tasks
+    </button>
+    <button class="nav-btn" id="nav-shopping" onclick="showSection('shopping')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Shopping
+    </button>
+    <button class="nav-btn" id="nav-notes" onclick="showSection('notes')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Notes
+    </button>
+    <button class="nav-btn" id="nav-more" onclick="showSection('more')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>More
+    </button>
+  </nav>
+
+  <!-- FAB -->
+  <div class="fab-overlay" id="fab-overlay" onclick="closeFab()"></div>
+  <div id="fab-menu">
+    <div class="fab-item" onclick="quickAdd('shopping')">🛒 Add to shopping</div>
+    <div class="fab-item" onclick="quickAdd('note')">📝 Add a note</div>
+    <div class="fab-item" onclick="quickAdd('task')">✅ Add a task</div>
+    <div class="fab-item" onclick="quickAdd('moment')">⭐ Log a moment</div>
+  </div>
+  <button id="fab" onclick="toggleFab()">+</button>
+</div>
+
+<!-- QUICK ADD MODAL -->
+<div id="quick-add-modal">
+  <div class="quick-modal">
+    <h3 id="quick-modal-title">Quick Add</h3>
+    <input type="text" class="quick-input" id="quick-input" placeholder="Type here..." onkeydown="if(event.key==='Enter')saveQuickAdd()" />
+    <div id="quick-task-who-wrap" style="display:none;margin-bottom:12px;">
+      <select id="quick-task-who" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:0.9rem;">
+        <option value="adam">Adam</option>
+        <option value="kristal">Kristal</option>
+        <option value="both">Both</option>
+      </select>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-cancel" onclick="closeQuickAdd()">Cancel</button>
+      <button class="quick-save" onclick="saveQuickAdd()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SLOT MODAL -->
+<div class="modal-overlay" id="add-slot-modal">
+  <div class="modal">
+    <h3>Add Schedule Slot</h3>
+    <input class="modal-input" type="text" id="slot-label" placeholder="What's happening..." />
+    <div class="modal-row">
+      <input class="modal-input" type="time" id="slot-time" style="margin-bottom:0;" />
+      <select class="modal-select" id="slot-who">
+        <option value="adam">Adam</option>
+        <option value="kristal">Kristal</option>
+        <option value="both">Both</option>
+        <option value="kids">Kids</option>
+        <option value="gym">Gym</option>
+        <option value="helper">Helper</option>
+        <option value="rest">Rest</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeAddSlot()">Cancel</button>
+      <button class="modal-save" onclick="saveNewSlot()">Add Slot</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+// Firebase loaded above, all functions defined here
+// ── FIREBASE ──
+var firebaseConfig = {
+  apiKey: "AIzaSyCPorlwE9Zl4M9jMS-SX9rVWEN2Z1Osxgg",
+  authDomain: "our-family-hub-d104d.firebaseapp.com",
+  databaseURL: "https://our-family-hub-d104d-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "our-family-hub-d104d",
+  storageBucket: "our-family-hub-d104d.firebasestorage.app",
+  messagingSenderId: "1020942521265",
+  appId: "1:1020942521265:web:e1d5c719c46c798dd56390"
+};
+
+var db = null;
+
+// ── STATE ──
+var currentUser = null;
+var currentSection = 'schedule';
+var currentSubsection = null;
+var selectedDay = 0;
+var budgetMode = 'weekly';
+var selectedMood = null;
+var quickAddType = null;
+var fabOpen = false;
+var witchingInterval = null;
+var dutyInterval = null;
+
+var DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+var DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+// Night duty: adam=Tue,Thu; kristal=Mon,Wed,Fri,Sat,Sun (0=Mon...6=Sun)
+var NIGHT_DUTY = { 0:'kristal',1:'adam',2:'kristal',3:'adam',4:'kristal',5:'kristal',6:'kristal' };
+
+// ── DEFAULT SCHEDULE ──
+var DEFAULT_SCHEDULE = {
+  0:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:'Adam drops Austin at nursery',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Kristal on nights duty',who:'kristal'}],
+  1:[{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:"Adam's washing day",who:'adam'},{time:'08:00',label:'Kristal drops Austin at nursery',who:'kristal'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Adam on nights duty',who:'adam'}],
+  2:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:'Adam drops Austin at nursery',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'🌹 Date night (fortnightly — Grandma Nicky babysits)',who:'both'}],
+  3:[{time:'07:00',label:'Get Austin ready (shared care day)',who:'both'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'09:00',label:'Auntie Laura arrives — covers Austin until noon',who:'helper'},{time:'12:00',label:'Auntie Laura leaves',who:'helper'},{time:'12:00',label:'Shared Austin care (Thu afternoon)',who:'both'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Adam on nights duty',who:'adam'}],
+  4:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'08:00',label:"Kristal's full day with Austin",who:'kristal'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'18:00',label:'🍕 Friday takeaway — food ordered in!',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Kristal on nights duty',who:'kristal'}],
+  5:[{time:'09:00',label:'👨‍👩‍👧‍👦 Family activity time',who:'both'},{time:'13:00',label:'Adam solo rest slot',who:'adam'},{time:'13:00',label:'Kristal solo rest slot',who:'kristal'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Couple evening time 💕',who:'both'},{time:'21:00',label:'Kristal on nights duty',who:'kristal'}],
+  6:[{time:'09:00',label:'😴 Rest day — no outings',who:'rest'},{time:'10:00',label:"Kristal's washing day",who:'kristal'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'18:30',label:'📋 30 min week prep',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'💬 15 min weekly check-in',who:'both'},{time:'20:30',label:'Kristal on nights duty',who:'kristal'}]
+};
+
+var DEFAULT_TASKS = [
+  {label:"Washing (Adam — Tuesdays only)",who:'adam',done:false},
+  {label:"Drop Austin at nursery Mon & Wed",who:'adam',done:false},
+  {label:"Run Austin's bath each night (7pm)",who:'adam',done:false},
+  {label:"Get Austin ready for bed",who:'adam',done:false},
+  {label:"Gym Mon, Wed, Fri (5–6:30am)",who:'adam',done:false},
+  {label:"Washing (all other days)",who:'kristal',done:false},
+  {label:"Drop Austin at nursery Tuesday",who:'kristal',done:false},
+  {label:"Cook tea 5pm daily",who:'kristal',done:false},
+  {label:"Put Austin down to sleep",who:'kristal',done:false},
+  {label:"Full day with Austin on Friday",who:'kristal',done:false},
+  {label:"Order Friday takeaway",who:'both',done:false},
+  {label:"Book Grandma Nicky for date night (fortnightly)",who:'both',done:false},
+  {label:"30 min week prep (Sunday evening)",who:'both',done:false},
+  {label:"Weekly check-in (Sunday 8pm)",who:'both',done:false}
+];
+
+var DEFAULT_AUSTIN_BAG = ['Spare clothes x2','Nappies x4','Wipes','Dummy & comfort toy','Named water bottle','Sunscreen (summer)','Signed permission forms'];
+var DEFAULT_OLIVIA_BAG = ['PE kit','Water bottle','Packed lunch / dinner money','Planner/homework','Pencil case','Reading book','Bus pass'];
+
+// ── LOGIN ──
+function doLogin(user) {
+  currentUser = user;
+  localStorage.setItem('familyHubUser', user);
+  showApp();
+}
+function doCodeLogin() {
+  var code = document.getElementById('code-input').value.toLowerCase().trim();
+  if (code === 'adam' || code === 'kristal') { doLogin(code); }
+  else { alert('Family code not recognised. Try "adam" or "kristal".'); }
+}
+function doLogout() {
+  currentUser = null;
+  localStorage.removeItem('familyHubUser');
+  if (witchingInterval) clearInterval(witchingInterval);
+  if (dutyInterval) clearInterval(dutyInterval);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function showApp() {
+  try { document.getElementById("login-screen").style.display = "none"; document.getElementById("app").style.display = "flex"; } catch(e) { console.error("showApp display",e); return; }
+  try { document.getElementById("av-adam").classList.toggle("me", currentUser === "adam"); } catch(e) {}
+  try { document.getElementById("av-kristal").classList.toggle("me", currentUser === "kristal"); } catch(e) {}
+  try { initFirebaseListeners(); } catch(e) { console.error("Firebase",e); }
+  try { buildDayTabs(); } catch(e) { console.error("buildDayTabs",e); }
+  try { renderSchedule(); } catch(e) { console.error("renderSchedule",e); }
+  try { setTodayTab(); } catch(e) { console.error("setTodayTab",e); }
+  try { updateDutyBanner(); } catch(e) { console.error("dutyBanner",e); }
+  try { startWitchingCountdown(); } catch(e) { console.error("witching",e); }
+  try { checkDateNight(); } catch(e) { console.error("dateNight",e); }
+  try { checkAutoTaskReset(); } catch(e) { console.error("taskReset",e); }
+  try { initSwipeToDelete(); } catch(e) { console.error("swipe",e); }
+  try { initPullToRefresh(); } catch(e) { console.error("ptr",e); }
+}
+
+// ── FIREBASE ──
+function setSyncStatus(s) { document.getElementById('sync-dot').className = 'sync-dot ' + s; }
+
+function initFirebaseListeners() {
+  db.ref('.info/connected').on('value', function(snap) { setSyncStatus(snap.val() ? 'connected' : ''); });
+
+  db.ref('schedule').on('value', function(snap) {
+    var d = snap.val();
+    if (d) { window._scheduleData = d; }
+    else { db.ref('schedule').set(DEFAULT_SCHEDULE); window._scheduleData = DEFAULT_SCHEDULE; }
+    renderSchedule();
+  });
+
+  db.ref('tasks').on('value', function(snap) {
+    var d = snap.val();
+    if (!d) {
+      var obj = {};
+      for (var i = 0; i < DEFAULT_TASKS.length; i++) { obj[db.ref('tasks').push().key] = DEFAULT_TASKS[i]; }
+      db.ref('tasks').set(obj);
+    } else { renderTasks(d); }
+  });
+
+  db.ref('shopping').on('value', function(snap) { renderShopping(snap.val()); });
+  db.ref('notes').on('value', function(snap) { renderNotes(snap.val()); });
+  db.ref('budget').on('value', function(snap) { renderBudget(snap.val()); });
+  db.ref('calendar').on('value', function(snap) { renderCalendar(snap.val()); });
+  db.ref('noticeboard').on('value', function(snap) { renderNoticeboard(snap.val()); });
+  db.ref('healthLog').on('value', function(snap) { renderHealthLog(snap.val()); });
+  db.ref('sleepLog').on('value', function(snap) { renderSleepLog(snap.val()); renderSleepChart(snap.val()); });
+  db.ref('growthAustin').on('value', function(snap) { renderGrowth('austin', snap.val()); renderGrowthChart('austin', snap.val()); });
+  db.ref('growthOlivia').on('value', function(snap) { renderGrowth('olivia', snap.val()); renderGrowthChart('olivia', snap.val()); });
+  db.ref('moodLog').on('value', function(snap) { renderMoodLog(snap.val()); });
+  db.ref('nappyLog').on('value', function(snap) { renderNappyLog(snap.val()); });
+  db.ref('bags').on('value', function(snap) { renderBags(snap.val()); });
+  db.ref('moments').on('value', function(snap) { renderMoments(snap.val()); });
+  db.ref('medicine').on('value', function(snap) { renderMedicine(snap.val()); });
+  db.ref('nightLog').on('value', function(snap) { renderNightLog(snap.val()); });
+  db.ref('emergency').on('value', function(snap) { renderEmergency(snap.val()); });
+  db.ref('grandmaNotes').on('value', function(snap) { renderGrandmaNotes(snap.val()); });
+  db.ref('daysOut').on('value', function(snap) { renderDaysOut(snap.val()); });
+  db.ref('savingsGoals').on('value', function(snap) { renderSavingsGoals(snap.val()); });
+  db.ref('meals').on('value', function() {});
+
+  // Seed bags if empty
+  db.ref('bags').once('value', function(snap) {
+    if (!snap.val()) {
+      var obj = { austin: {}, olivia: {} };
+      for (var i = 0; i < DEFAULT_AUSTIN_BAG.length; i++) { obj.austin[db.ref('bags/austin').push().key] = {label: DEFAULT_AUSTIN_BAG[i], done: false}; }
+      for (var j = 0; j < DEFAULT_OLIVIA_BAG.length; j++) { obj.olivia[db.ref('bags/olivia').push().key] = {label: DEFAULT_OLIVIA_BAG[j], done: false}; }
+      db.ref('bags').set(obj);
+    }
+  });
+}
+
+// ── NAVIGATION ──
+function showSection(name) {
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  var nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('active');
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('sec-' + name).classList.add('active');
+  currentSection = name; currentSubsection = null;
+  document.getElementById('main-content').scrollTop = 0;
+  closeFab();
+}
+
+function showSubsection(name) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('sec-' + name).classList.add('active');
+  currentSubsection = name;
+  document.getElementById('main-content').scrollTop = 0;
+  if (name === 'meals') buildMealPlanner();
+  closeFab();
+}
+
+function hideSubsection() { showSection('more'); }
+
+// ── DUTY BANNER ──
+function updateDutyBanner() {
+  var now = new Date();
+  var dow = now.getDay();
+  var todayIdx = dow === 0 ? 6 : dow - 1;
+  var who = NIGHT_DUTY[todayIdx];
+  var banner = document.getElementById('duty-banner');
+  var isAdam = who === 'adam';
+  banner.style.background = isAdam ? 'linear-gradient(135deg,#1e3a5f,#2563eb)' : 'linear-gradient(135deg,#14532d,#16a34a)';
+  document.getElementById('duty-icon').textContent = '🌙';
+  document.getElementById('duty-text').textContent = (isAdam ? 'Adam' : 'Kristal') + '\'s night tonight';
+  document.getElementById('duty-sub').textContent = isAdam ? 'Adam covers overnight — Kristal sleeps' : 'Kristal covers overnight — Adam sleeps';
+}
+
+// ── WITCHING HOUR COUNTDOWN ──
+function startWitchingCountdown() {
+  if (witchingInterval) clearInterval(witchingInterval);
+  function tick() {
+    var now = new Date();
+    var target = new Date();
+    target.setHours(16, 0, 0, 0);
+    var diff = target - now;
+    var el = document.getElementById('witching-time');
+    var wrap = document.getElementById('witching-wrap');
+    if (diff > 0 && diff < 4 * 3600000) {
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      el.textContent = (h > 0 ? h + 'h ' : '') + m + 'm';
+      el.classList.remove('witching-active');
+      wrap.style.display = 'block';
+    } else if (diff <= 0 && diff > -3600000) {
+      el.textContent = '🚨 NOW';
+      el.classList.add('witching-active');
+      wrap.style.display = 'block';
+    } else {
+      wrap.style.display = 'none';
+    }
+  }
+  tick();
+  witchingInterval = setInterval(tick, 60000);
+}
+
+// ── DATE NIGHT ──
+function checkDateNight() {
+  var now = new Date();
+  var dow = now.getDay(); // 0=Sun,3=Wed
+  if (dow !== 3) { document.getElementById('date-night-banner').style.display = 'none'; return; }
+  var banner = document.getElementById('date-night-banner');
+  banner.style.display = 'block';
+  document.getElementById('date-night-text').textContent = 'Date night tonight! 🌹';
+}
+
+// ── AUTO TASK RESET ──
+function checkAutoTaskReset() {
+  var now = new Date();
+  var dow = now.getDay(); // 1 = Monday
+  var lastReset = localStorage.getItem('lastTaskReset');
+  var thisMonday = getThisMonday();
+  if (dow === 1 && lastReset !== thisMonday) {
+    resetTasks(true);
+    localStorage.setItem('lastTaskReset', thisMonday);
+  }
+  var sub = document.getElementById('week-reset-sub');
+  if (sub) {
+    var days = (8 - dow) % 7 || 7;
+    sub.textContent = 'Next auto-reset in ' + days + ' day' + (days !== 1 ? 's' : '');
+  }
+}
+
+function getThisMonday() {
+  var d = new Date();
+  var day = d.getDay();
+  var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  return d.toISOString().slice(0, 10);
+}
+
+function resetTasks(silent) {
+  if (!silent && !confirm('Reset all tasks to unchecked for the new week?')) return;
+  db.ref('tasks').once('value', function(snap) {
+    var d = snap.val();
+    if (!d) return;
+    var updates = {};
+    for (var k in d) { updates[k + '/done'] = false; }
+    db.ref('tasks').update(updates);
+    setSyncStatus('syncing');
+    setTimeout(function() { setSyncStatus('connected'); }, 1000);
+  });
+}
+
+// ── SCHEDULE ──
+function buildDayTabs() {
+  var today = new Date().getDay();
+  var todayIdx = today === 0 ? 6 : today - 1;
+  var html = '';
+  for (var i = 0; i < 7; i++) {
+    html += '<button class="day-tab' + (i === selectedDay ? ' active' : '') + '" onclick="selectDay(' + i + ')">' + DAY_SHORT[i] + (i === todayIdx ? '<span class="today-badge">Today</span>' : '') + '</button>';
+  }
+  document.getElementById('day-tabs').innerHTML = html;
+}
+
+function setTodayTab() {
+  var today = new Date().getDay();
+  selectDay(today === 0 ? 6 : today - 1);
+}
+
+function selectDay(idx) {
+  selectedDay = idx;
+  document.querySelectorAll('.day-tab').forEach(function(t, i) { t.classList.toggle('active', i === idx); });
+  renderSchedule();
+}
+
+function renderSchedule() {
+  var data = window._scheduleData || DEFAULT_SCHEDULE;
+  var daySlots = data[selectedDay] || [];
+  var sorted = [];
+  for (var k in daySlots) sorted.push({key: k, slot: daySlots[k]});
+  sorted.sort(function(a, b) { return a.slot.time > b.slot.time ? 1 : -1; });
+  var html = '';
+  for (var i = 0; i < sorted.length; i++) {
+    var s = sorted[i].slot;
+    var cls = 'slot-' + (s.who || 'rest');
+    var who = s.who ? s.who.charAt(0).toUpperCase() + s.who.slice(1) : '';
+    html += '<div class="schedule-slot ' + cls + '"><div class="slot-time">' + fmt12(s.time) + '</div><div class="slot-body"><div class="slot-label">' + esc(s.label) + '</div><div class="slot-who">' + who + '</div></div><button class="slot-del" onclick="deleteSlot(' + selectedDay + ',\'' + sorted[i].key + '\')">🗑</button></div>';
+  }
+  if (!sorted.length) html = '<div class="empty">No slots for this day yet</div>';
+  document.getElementById('schedule-slots').innerHTML = html;
+}
+
+function fmt12(t) {
+  if (!t) return '';
+  var p = t.split(':'); var h = parseInt(p[0]); var m = p[1];
+  return (h % 12 || 12) + ':' + m + (h >= 12 ? 'pm' : 'am');
+}
+
+function openAddSlot() { document.getElementById('add-slot-modal').classList.add('open'); }
+function closeAddSlot() {
+  document.getElementById('add-slot-modal').classList.remove('open');
+  document.getElementById('slot-label').value = '';
+  document.getElementById('slot-time').value = '';
+}
+function saveNewSlot() {
+  var label = document.getElementById('slot-label').value.trim();
+  var time = document.getElementById('slot-time').value;
+  var who = document.getElementById('slot-who').value;
+  if (!label || !time) { alert('Please enter a time and label'); return; }
+  setSyncStatus('syncing');
+  db.ref('schedule/' + selectedDay).push({label: label, time: time, who: who}, function() { setSyncStatus('connected'); });
+  closeAddSlot();
+}
+function deleteSlot(dayIdx, key) {
+  if (!confirm('Delete this slot?')) return;
+  setSyncStatus('syncing');
+  db.ref('schedule/' + dayIdx + '/' + key).remove(function() { setSyncStatus('connected'); });
+}
+
+// ── TASKS ──
+function renderTasks(data) {
+  var adam = [], kristal = [], both = [];
+  for (var k in data) { var t = data[k]; t._key = k; if (t.who === 'adam') adam.push(t); else if (t.who === 'kristal') kristal.push(t); else both.push(t); }
+  var html = buildTaskGroup("Adam's Tasks", adam, 'var(--adam)') + buildTaskGroup("Kristal's Tasks", kristal, 'var(--kristal)') + buildTaskGroup('Shared Tasks', both, 'var(--both)');
+  document.getElementById('tasks-container').innerHTML = html;
+  initSwipeToDelete();
+}
+
+function buildTaskGroup(title, items, color) {
+  if (!items.length) return '';
+  var html = '<div class="task-group-title" style="color:' + color + '">' + title + '</div>';
+  for (var i = 0; i < items.length; i++) {
+    var t = items[i];
+    html += '<div class="swipe-wrap" data-key="' + t._key + '" data-type="task"><div class="swipe-bg">🗑</div><div class="task-item' + (t.done ? ' done' : '') + '" onclick="toggleTask(\'' + t._key + '\',' + !t.done + ')"><div class="task-check' + (t.done ? ' checked' : '') + '">' + (t.done ? '✓' : '') + '</div><div class="task-label">' + esc(t.label) + '</div><button class="task-del" onclick="deleteTask(event,\'' + t._key + '\')">🗑</button></div></div>';
+  }
+  return html;
+}
+
+function toggleTask(key, newDone) {
+  setSyncStatus('syncing');
+  db.ref('tasks/' + key + '/done').set(newDone, function() { setSyncStatus('connected'); });
+}
+
+function deleteTask(e, key) {
+  e.stopPropagation();
+  setSyncStatus('syncing');
+  db.ref('tasks/' + key).remove(function() { setSyncStatus('connected'); });
+}
+
+function addTask() {
+  var label = document.getElementById('new-task-input').value.trim();
+  var who = document.getElementById('new-task-who').value;
+  if (!label) return;
+  setSyncStatus('syncing');
+  db.ref('tasks').push({label: label, who: who, done: false}, function() { setSyncStatus('connected'); });
+  document.getElementById('new-task-input').value = '';
+}
+
+// ── SHOPPING ──
+function renderShopping(data) {
+  if (!data) { document.getElementById('shop-list').innerHTML = '<div class="empty">Shopping list is empty</div>'; return; }
+  var items = [];
+  for (var k in data) { var i = data[k]; i._key = k; items.push(i); }
+  items.sort(function(a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
+  var html = '';
+  for (var j = 0; j < items.length; j++) {
+    var it = items[j];
+    html += '<div class="shop-swipe-wrap" data-key="' + it._key + '" data-type="shop"><div class="shop-swipe-bg">🗑</div><div class="shop-item"><div class="shop-check' + (it.done ? ' checked' : '') + '" onclick="toggleShop(\'' + it._key + '\',' + !it.done + ')">' + (it.done ? '✓' : '') + '</div><div class="shop-label' + (it.done ? ' done' : '') + '">' + esc(it.label) + '</div></div></div>';
+  }
+  document.getElementById('shop-list').innerHTML = html || '<div class="empty">Empty</div>';
+  initSwipeToDelete();
+}
+
+function addShopItem() {
+  var val = document.getElementById('shop-input').value.trim();
+  if (!val) return;
+  setSyncStatus('syncing');
+  db.ref('shopping').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  document.getElementById('shop-input').value = '';
+}
+
+function toggleShop(key, done) {
+  setSyncStatus('syncing');
+  db.ref('shopping/' + key + '/done').set(done, function() { setSyncStatus('connected'); });
+}
+
+// ── SWIPE TO DELETE ──
+function initSwipeToDelete() {
+  var wraps = document.querySelectorAll('.swipe-wrap, .shop-swipe-wrap');
+  wraps.forEach(function(wrap) {
+    if (wrap._swipeInit) return;
+    wrap._swipeInit = true;
+    var startX = 0;
+    var currentX = 0;
+    var inner = wrap.querySelector('.task-item, .shop-item');
+    if (!inner) return;
+
+    function onStart(e) {
+      startX = e.touches ? e.touches[0].clientX : e.clientX;
+      currentX = 0;
+    }
+    function onMove(e) {
+      var dx = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+      if (dx < 0) {
+        currentX = Math.max(dx, -80);
+        inner.style.transform = 'translateX(' + currentX + 'px)';
+        e.preventDefault();
+      }
+    }
+    function onEnd() {
+      if (currentX < -50) {
+        inner.style.transform = 'translateX(-80px)';
+        var key = wrap.getAttribute('data-key');
+        var type = wrap.getAttribute('data-type');
+        setTimeout(function() {
+          if (type === 'task') { db.ref('tasks/' + key).remove(); }
+          else if (type === 'shop') { db.ref('shopping/' + key).remove(); }
+        }, 300);
+      } else {
+        inner.style.transform = 'translateX(0)';
+      }
+      currentX = 0;
+    }
+    inner.addEventListener('touchstart', onStart, {passive: true});
+    inner.addEventListener('touchmove', onMove, {passive: false});
+    inner.addEventListener('touchend', onEnd);
+  });
+}
+
+// ── PULL TO REFRESH ──
+function initPullToRefresh() {
+  var main = document.getElementById('main-content');
+  var ptr = document.getElementById('ptr-indicator');
+  var startY = 0;
+  var pulling = false;
+
+  main.addEventListener('touchstart', function(e) {
+    if (main.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; }
+  }, {passive: true});
+
+  main.addEventListener('touchmove', function(e) {
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy > 60) { ptr.classList.add('visible'); ptr.textContent = '↓ Release to refresh'; }
+  }, {passive: true});
+
+  main.addEventListener('touchend', function() {
+    if (!pulling) return;
+    pulling = false;
+    if (ptr.classList.contains('visible')) {
+      ptr.textContent = '⟳ Refreshing...';
+      setTimeout(function() {
+        ptr.classList.remove('visible');
+        db.ref('shopping').once('value', function(snap) { renderShopping(snap.val()); });
+        db.ref('tasks').once('value', function(snap) { if (snap.val()) renderTasks(snap.val()); });
+      }, 800);
+    }
+  });
+}
+
+// ── NOTES ──
+function renderNotes(data) {
+  if (!data) { document.getElementById('notes-list').innerHTML = '<div class="empty">No notes yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var n = data[k]; n._key = k; items.push(n); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  for (var i = 0; i < items.length; i++) {
+    var n = items[i];
+    var bg = n.by === 'adam' ? 'var(--adam-light)' : 'var(--kristal-light)';
+    var tx = n.by === 'adam' ? '#1e3a5f' : '#14532d';
+    html += '<div class="note-card"><div class="note-meta"><span class="note-who" style="background:' + bg + ';color:' + tx + '">' + (n.by || '?') + '</span><div style="display:flex;gap:8px;align-items:center"><span class="note-date">' + fmtDate(n.ts) + '</span><button class="note-del" onclick="db.ref(\'notes/' + n._key + '\').remove()">🗑</button></div></div><div class="note-text">' + esc(n.text) + '</div></div>';
+  }
+  document.getElementById('notes-list').innerHTML = html || '<div class="empty">No notes</div>';
+}
+
+function addNote() {
+  var text = document.getElementById('note-input').value.trim();
+  if (!text) return;
+  setSyncStatus('syncing');
+  db.ref('notes').push({text: text, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
+  document.getElementById('note-input').value = '';
+}
+
+// ── MEALS ──
+function buildMealPlanner() {
+  var html = '';
+  for (var i = 0; i < 7; i++) {
+    html += '<div class="meal-day"><div class="meal-day-label">' + DAYS[i] + (i === 4 ? ' 🍕 (takeaway night!)' : '') + '</div><input class="meal-input" type="text" placeholder="What\'s for tea?" id="meal-main-' + i + '" onblur="saveMeal(' + i + ')" /><input class="meal-input" type="text" placeholder="Notes..." id="meal-notes-' + i + '" onblur="saveMeal(' + i + ')" style="margin-bottom:0;" /></div>';
+  }
+  document.getElementById('meal-planner-container').innerHTML = html;
+  db.ref('meals').once('value', function(snap) {
+    var d = snap.val() || {};
+    for (var j = 0; j < 7; j++) {
+      var e1 = document.getElementById('meal-main-' + j);
+      var e2 = document.getElementById('meal-notes-' + j);
+      if (e1 && d[j]) e1.value = d[j].main || '';
+      if (e2 && d[j]) e2.value = d[j].notes || '';
+    }
+  });
+}
+
+function saveMeal(idx) {
+  var m = document.getElementById('meal-main-' + idx);
+  var n = document.getElementById('meal-notes-' + idx);
+  if (!m) return;
+  setSyncStatus('syncing');
+  db.ref('meals/' + idx).set({main: m.value, notes: n ? n.value : ''}, function() { setSyncStatus('connected'); });
+}
+
+// ── BUDGET ──
+function setBudgetMode(mode) {
+  budgetMode = mode;
+  document.getElementById('budget-weekly-btn').classList.toggle('active', mode === 'weekly');
+  document.getElementById('budget-monthly-btn').classList.toggle('active', mode === 'monthly');
+  db.ref('budget').once('value', function(snap) { renderBudget(snap.val()); });
+}
+
+function renderBudget(data) {
+  var items = [];
+  if (data) for (var k in data) { var i = data[k]; i._key = k; items.push(i); }
+  var f = items.filter(function(x) { return x.period === budgetMode; });
+  var income = 0, expense = 0, saving = 0;
+  f.forEach(function(x) { var a = parseFloat(x.amount) || 0; if (x.type === 'income') income += a; else if (x.type === 'expense') expense += a; else if (x.type === 'saving') saving += a; });
+  var net = income - expense - saving;
+  document.getElementById('budget-summary').innerHTML =
+    '<div class="budget-stat"><div class="budget-stat-value" style="color:var(--kristal)">£' + income.toFixed(0) + '</div><div class="budget-stat-label">Income</div></div>' +
+    '<div class="budget-stat"><div class="budget-stat-value" style="color:var(--gym)">£' + expense.toFixed(0) + '</div><div class="budget-stat-label">Spending</div></div>' +
+    '<div class="budget-stat"><div class="budget-stat-value" style="color:' + (net >= 0 ? 'var(--adam)' : 'var(--gym)') + '">£' + net.toFixed(0) + '</div><div class="budget-stat-label">Left over</div></div>';
+  var chart = '<div class="card-title">Spending breakdown</div>';
+  var exp = f.filter(function(x) { return x.type === 'expense'; });
+  if (exp.length && expense > 0) {
+    exp.forEach(function(x) { var p = Math.round((x.amount / expense) * 100); chart += '<div class="chart-bar-wrap"><div class="chart-bar-label"><span>' + esc(x.label) + '</span><span>£' + parseFloat(x.amount).toFixed(2) + ' (' + p + '%)</span></div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:' + p + '%;background:var(--gym)"></div></div></div>'; });
+  } else { chart += '<div class="empty" style="padding:12px 0">No expenses logged</div>'; }
+  document.getElementById('budget-chart').innerHTML = chart;
+  var lh = '';
+  f.forEach(function(x) { var dc = x.type + '-dot'; lh += '<div class="budget-item"><div class="budget-item-dot ' + dc + '"></div><div class="budget-item-label">' + esc(x.label) + '<br><span style="font-size:0.7rem;color:var(--text2)">' + x.type + '</span></div><div class="budget-item-amount">£' + parseFloat(x.amount).toFixed(2) + '</div><button class="budget-item-del" onclick="db.ref(\'budget/' + x._key + '\').remove()">🗑</button></div>'; });
+  document.getElementById('budget-list').innerHTML = lh || '<div class="empty">No entries yet</div>';
+}
+
+function addBudgetEntry() {
+  var label = document.getElementById('budget-label').value.trim();
+  var amount = parseFloat(document.getElementById('budget-amount').value);
+  var type = document.getElementById('budget-type').value;
+  if (!label || !amount) { alert('Please fill in label and amount'); return; }
+  setSyncStatus('syncing');
+  db.ref('budget').push({label: label, amount: amount, type: type, period: budgetMode}, function() { setSyncStatus('connected'); });
+  document.getElementById('budget-label').value = '';
+  document.getElementById('budget-amount').value = '';
+}
+
+function addSavingsGoal() {
+  var name = document.getElementById('goal-name').value.trim();
+  var target = parseFloat(document.getElementById('goal-target').value);
+  var saved = parseFloat(document.getElementById('goal-saved').value) || 0;
+  if (!name || !target) return;
+  db.ref('savingsGoals').push({name: name, target: target, saved: saved});
+  document.getElementById('goal-name').value = '';
+  document.getElementById('goal-target').value = '';
+  document.getElementById('goal-saved').value = '';
+}
+
+function renderSavingsGoals(data) {
+  var el = document.getElementById('savings-goals-list');
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="empty" style="padding:8px 0">No goals yet</div>'; return; }
+  var html = '';
+  for (var k in data) {
+    var g = data[k];
+    var pct = Math.min(100, Math.round((g.saved / g.target) * 100));
+    html += '<div class="savings-goal"><div class="savings-goal-header"><span class="savings-goal-name">' + esc(g.name) + '</span><span class="savings-goal-amount">£' + g.saved + ' / £' + g.target + ' (' + pct + '%)</span></div><div class="savings-progress"><div class="savings-progress-bar" style="width:' + pct + '%"></div></div></div>';
+  }
+  el.innerHTML = html;
+}
+
+// ── CALENDAR ──
+function renderCalendar(data) {
+  if (!data) { document.getElementById('calendar-list').innerHTML = '<div class="empty">No events yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return a.date > b.date ? 1 : -1; });
+  var html = '';
+  items.forEach(function(ev) {
+    var d = ev.date ? new Date(ev.date + 'T00:00:00') : null;
+    html += '<div class="calendar-event"><div class="cal-date"><div class="cal-day">' + (d ? d.getDate() : '') + '</div><div class="cal-month">' + (d ? d.toLocaleString('default', {month: 'short'}) : '') + '</div></div><div class="cal-body"><div class="cal-title">' + esc(ev.title) + '</div><div class="cal-detail">' + esc(ev.detail || '') + '</div></div><button class="cal-del" onclick="db.ref(\'calendar/' + ev._key + '\').remove()">🗑</button></div>';
+  });
+  document.getElementById('calendar-list').innerHTML = html || '<div class="empty">No events</div>';
+}
+
+function addCalEvent() {
+  var title = document.getElementById('cal-title').value.trim();
+  var date = document.getElementById('cal-date').value;
+  var detail = document.getElementById('cal-detail').value.trim();
+  if (!title || !date) { alert('Please enter title and date'); return; }
+  db.ref('calendar').push({title: title, date: date, detail: detail});
+  document.getElementById('cal-title').value = '';
+  document.getElementById('cal-date').value = '';
+  document.getElementById('cal-detail').value = '';
+}
+
+// ── NOTICEBOARD ──
+function renderNoticeboard(data) {
+  if (!data) { document.getElementById('notice-list').innerHTML = '<div class="empty">No notices yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var n = data[k]; n._key = k; items.push(n); }
+  items.sort(function(a, b) { return (a.due || '') > (b.due || '') ? 1 : -1; });
+  var today = new Date().toISOString().slice(0, 10);
+  var html = '';
+  items.forEach(function(n) {
+    var overdue = n.due && n.due < today;
+    var cls = overdue ? 'notice-overdue' : 'notice-' + (n.type || 'family');
+    var dueC = overdue ? 'background:var(--gym-light);color:#7f1d1d' : 'background:var(--kids-light);color:#78350f';
+    html += '<div class="notice-card ' + cls + '"><div class="notice-header"><div class="notice-title">' + esc(n.text) + '</div><div style="display:flex;gap:8px;align-items:center">' + (n.due ? '<span class="notice-due" style="' + dueC + '">Due ' + n.due + '</span>' : '') + '<button class="notice-del" onclick="db.ref(\'noticeboard/' + n._key + '\').remove()">🗑</button></div></div><div class="notice-text">' + cap(n.type || 'family') + '</div></div>';
+  });
+  document.getElementById('notice-list').innerHTML = html || '<div class="empty">No notices</div>';
+}
+
+function addNotice() {
+  var text = document.getElementById('notice-input').value.trim();
+  var due = document.getElementById('notice-due').value;
+  var type = document.getElementById('notice-type').value;
+  if (!text) return;
+  db.ref('noticeboard').push({text: text, due: due, type: type, addedBy: currentUser});
+  document.getElementById('notice-input').value = '';
+  document.getElementById('notice-due').value = '';
+}
+
+// ── HEALTH ──
+function renderHealthLog(data) {
+  if (!data) { document.getElementById('health-log-list').innerHTML = '<div class="empty">No logs yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var tc = {symptom: 'var(--gym)', temperature: 'var(--kids)', medicine: 'var(--both)', note: 'var(--adam)'};
+  var html = '';
+  items.forEach(function(e) {
+    html += '<div class="log-entry"><button class="log-del" onclick="db.ref(\'healthLog/' + e._key + '\').remove()">🗑</button><div class="log-timestamp">' + fmtDate(e.ts) + '</div><span class="log-tag" style="background:' + (tc[e.type] || 'var(--rest)') + '">' + cap(e.type) + '</span><div>' + esc(e.detail) + '</div></div>';
+  });
+  document.getElementById('health-log-list').innerHTML = html || '<div class="empty">No logs</div>';
+}
+
+function addHealthLog() {
+  var type = document.getElementById('health-type').value;
+  var detail = document.getElementById('health-detail').value.trim();
+  if (!detail) return;
+  db.ref('healthLog').push({type: type, detail: detail, ts: Date.now(), by: currentUser});
+  document.getElementById('health-detail').value = '';
+}
+
+// ── SLEEP ──
+function addSleepLog(rating) {
+  var note = document.getElementById('sleep-note').value.trim();
+  db.ref('sleepLog').push({rating: rating, note: note, ts: Date.now(), by: currentUser});
+  document.getElementById('sleep-note').value = '';
+}
+
+function renderSleepLog(data) {
+  if (!data) { document.getElementById('sleep-log-list').innerHTML = '<div class="empty">No sleep logs yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  items.forEach(function(e) {
+    var rc = 'sleep-rating-' + e.rating.toLowerCase();
+    html += '<div class="log-entry"><button class="log-del" onclick="db.ref(\'sleepLog/' + e._key + '\').remove()">🗑</button><div class="log-timestamp">' + fmtDate(e.ts) + '</div><span class="log-tag ' + rc + '">' + e.rating + '</span>' + (e.note ? '<div>' + esc(e.note) + '</div>' : '') + '</div>';
+  });
+  document.getElementById('sleep-log-list').innerHTML = html || '<div class="empty">No logs</div>';
+}
+
+function renderSleepChart(data) {
+  var el = document.getElementById('sleep-chart');
+  if (!el) return;
+  var byDate = {};
+  if (data) {
+    for (var k in data) {
+      var e = data[k];
+      var d = new Date(e.ts).toISOString().slice(0, 10);
+      byDate[d] = e.rating.toLowerCase();
+    }
+  }
+  var html = '';
+  for (var i = 29; i >= 0; i--) {
+    var dt = new Date();
+    dt.setDate(dt.getDate() - i);
+    var ds = dt.toISOString().slice(0, 10);
+    var rating = byDate[ds] || 'empty';
+    var day = dt.getDate();
+    html += '<div class="sleep-dot ' + rating + '" title="' + ds + ': ' + (byDate[ds] || 'no data') + '"><span style="font-size:0.55rem">' + day + '</span></div>';
+  }
+  el.innerHTML = html;
+}
+
+// ── GROWTH ──
+function addGrowthEntry(who) {
+  var h = parseFloat(document.getElementById(who + '-height').value);
+  var w = parseFloat(document.getElementById(who + '-weight').value);
+  var date = document.getElementById(who + '-growth-date').value;
+  if (!date) { alert('Please select a date'); return; }
+  var ref = who === 'austin' ? 'growthAustin' : 'growthOlivia';
+  db.ref(ref).push({height: h || null, weight: w || null, date: date});
+  document.getElementById(who + '-height').value = '';
+  document.getElementById(who + '-weight').value = '';
+}
+
+function renderGrowth(who, data) {
+  var el = document.getElementById(who + '-growth-list');
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="empty">No measurements yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.date > a.date ? 1 : -1; });
+  var html = '';
+  items.forEach(function(e) {
+    var ref = who === 'austin' ? 'growthAustin' : 'growthOlivia';
+    html += '<div class="growth-entry"><div class="growth-date">' + e.date + '</div><div class="growth-vals">' + (e.height ? '<div class="growth-val">' + e.height + '<span>cm</span></div>' : '') + (e.weight ? '<div class="growth-val">' + e.weight + '<span>kg</span></div>' : '') + '</div><button class="growth-del" onclick="db.ref(\'' + ref + '/' + e._key + '\').remove()">🗑</button></div>';
+  });
+  el.innerHTML = html || '<div class="empty">No measurements</div>';
+}
+
+function renderGrowthChart(who, data) {
+  var elId = who + '-height-chart';
+  var el = document.getElementById(elId);
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="growth-no-data">No data yet</div>'; return; }
+  var items = [];
+  for (var k in data) { if (data[k].height) items.push({date: data[k].date, h: data[k].height}); }
+  if (items.length < 2) { el.innerHTML = '<div class="growth-no-data">Log at least 2 measurements to see a chart</div>'; return; }
+  items.sort(function(a, b) { return a.date > b.date ? 1 : -1; });
+  var minH = Math.min.apply(null, items.map(function(x) { return x.h; }));
+  var maxH = Math.max.apply(null, items.map(function(x) { return x.h; }));
+  var range = maxH - minH || 1;
+  var w = 300; var h = 100; var pad = 10;
+  var pts = items.map(function(x, i) {
+    var px = pad + (i / (items.length - 1)) * (w - 2 * pad);
+    var py = h - pad - ((x.h - minH) / range) * (h - 2 * pad);
+    return px.toFixed(1) + ',' + py.toFixed(1);
+  }).join(' ');
+  var dots = items.map(function(x, i) {
+    var px = pad + (i / (items.length - 1)) * (w - 2 * pad);
+    var py = h - pad - ((x.h - minH) / range) * (h - 2 * pad);
+    return '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="4" fill="' + (who === 'austin' ? 'var(--kids)' : 'var(--both)') + '"/>';
+  }).join('');
+  el.innerHTML = '<svg viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:120px"><polyline points="' + pts + '" fill="none" stroke="' + (who === 'austin' ? 'var(--kids)' : 'var(--both)') + '" stroke-width="2.5" stroke-linejoin="round"/>' + dots + '<text x="' + pad + '" y="' + (h - 2) + '" font-size="9" fill="var(--text2)">' + minH + 'cm</text><text x="' + pad + '" y="14" font-size="9" fill="var(--text2)">' + maxH + 'cm</text></svg>';
+}
+
+// ── MOOD ──
+function selectMood(emoji) {
+  selectedMood = emoji;
+  document.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.toggle('selected', b.textContent === emoji); });
+}
+
+function saveMood() {
+  if (!selectedMood) { alert('Please select a mood'); return; }
+  var note = document.getElementById('mood-note').value.trim();
+  db.ref('moodLog').push({emoji: selectedMood, note: note, ts: Date.now(), by: currentUser});
+  document.getElementById('mood-note').value = '';
+  selectedMood = null;
+  document.querySelectorAll('.mood-btn').forEach(function(b) { b.classList.remove('selected'); });
+}
+
+function renderMoodLog(data) {
+  var el = document.getElementById('mood-list');
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="empty">No mood logs yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  items.forEach(function(e) {
+    html += '<div class="mood-entry"><div class="mood-emoji">' + e.emoji + '</div><div class="mood-detail"><div class="mood-ts">' + fmtDate(e.ts) + ' · ' + (e.by || '?') + '</div>' + (e.note ? '<div class="mood-note">' + esc(e.note) + '</div>' : '') + '</div><button class="mood-del" onclick="db.ref(\'moodLog/' + e._key + '\').remove()">🗑</button></div>';
+  });
+  el.innerHTML = html || '<div class="empty">No logs</div>';
+}
+
+// ── NAPPY / POTTY ──
+function addNappyLog(type) {
+  var note = document.getElementById('nappy-note').value.trim();
+  db.ref('nappyLog').push({type: type, note: note, ts: Date.now(), by: currentUser});
+  document.getElementById('nappy-note').value = '';
+}
+
+function renderNappyLog(data) {
+  var el = document.getElementById('nappy-list');
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="empty">No logs yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var tc = {'Success': 'background:var(--kristal);color:white', 'Accident': 'background:var(--gym);color:white', 'Dry night': 'background:var(--adam);color:white', 'Wet nappy': 'background:var(--kids);color:white'};
+  var html = '';
+  items.forEach(function(e) {
+    html += '<div class="nappy-entry"><span class="nappy-tag" style="' + (tc[e.type] || '') + '">' + e.type + '</span><span class="nappy-ts">' + fmtDate(e.ts) + (e.note ? ' — ' + esc(e.note) : '') + '</span><button class="nappy-del" onclick="db.ref(\'nappyLog/' + e._key + '\').remove()">🗑</button></div>';
+  });
+  el.innerHTML = html || '<div class="empty">No logs</div>';
+}
+
+// ── BAG CHECKLISTS ──
+function renderBags(data) {
+  renderBagList('austin', data);
+  renderBagList('olivia', data);
+}
+
+function renderBagList(who, data) {
+  var el = document.getElementById(who + '-bag-list');
+  if (!el) return;
+  var items = data && data[who] ? data[who] : {};
+  var html = '';
+  for (var k in items) {
+    var it = items[k];
+    html += '<div class="bag-item"><div class="bag-check' + (it.done ? ' checked' : '') + '" onclick="toggleBag(\'' + who + '\',\'' + k + '\',' + !it.done + ')">' + (it.done ? '✓' : '') + '</div><div class="bag-label' + (it.done ? ' done' : '') + '">' + esc(it.label) + '</div><button class="bag-del" onclick="db.ref(\'bags/' + who + '/' + k + '\').remove()">🗑</button></div>';
+  }
+  el.innerHTML = html || '<div class="empty" style="padding:8px 0">No items</div>';
+}
+
+function toggleBag(who, key, done) {
+  db.ref('bags/' + who + '/' + key + '/done').set(done);
+}
+
+function addBagItem(who) {
+  var val = document.getElementById(who + '-bag-input').value.trim();
+  if (!val) return;
+  db.ref('bags/' + who).push({label: val, done: false});
+  document.getElementById(who + '-bag-input').value = '';
+}
+
+function resetBag(who) {
+  db.ref('bags/' + who).once('value', function(snap) {
+    var d = snap.val();
+    if (!d) return;
+    var updates = {};
+    for (var k in d) updates[k + '/done'] = false;
+    db.ref('bags/' + who).update(updates);
+  });
+}
+
+// ── MOMENTS ──
+function addMoment() {
+  var text = document.getElementById('moment-input').value.trim();
+  if (!text) return;
+  db.ref('moments').push({text: text, by: currentUser, ts: Date.now()});
+  document.getElementById('moment-input').value = '';
+}
+
+function renderMoments(data) {
+  var el = document.getElementById('moments-list');
+  if (!el) return;
+  if (!data) { el.innerHTML = '<div class="empty">No moments saved yet — start recording the good stuff! ✨</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  items.forEach(function(e) {
+    var bg = e.by === 'adam' ? 'var(--adam-light)' : 'var(--kristal-light)';
+    var tx = e.by === 'adam' ? '#1e3a5f' : '#14532d';
+    html += '<div class="moment-card"><div class="moment-header"><div class="moment-who-date"><span class="moment-who" style="background:' + bg + ';color:' + tx + '">' + (e.by || '?') + '</span><span class="moment-date">' + fmtDate(e.ts) + '</span></div><button class="moment-del" onclick="db.ref(\'moments/' + e._key + '\').remove()">🗑</button></div><div class="moment-text">⭐ ' + esc(e.text) + '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
+// ── MEDICINE ──
+function renderMedicine(data) {
+  if (!data) { document.getElementById('medicine-list').innerHTML = '<div class="empty">Cabinet is empty</div>'; return; }
+  var sl = {ok: '✅ OK', low: '⚠️ Low', out: '❌ Out'};
+  var html = '';
+  for (var k in data) {
+    var m = data[k]; m._key = k;
+    var sc = 'stock-' + (m.stock || 'ok');
+    html += '<div class="med-item"><div class="med-header"><div class="med-name">' + esc(m.name) + '</div><span class="med-stock ' + sc + '">' + (sl[m.stock] || 'OK') + '</span></div><div class="med-details">Dose: ' + esc(m.dose || '—') + ' · Expires: ' + (m.expiry || '—') + '</div><button class="med-del" onclick="db.ref(\'medicine/' + m._key + '\').remove()">🗑 Remove</button></div>';
+  }
+  document.getElementById('medicine-list').innerHTML = html || '<div class="empty">Empty</div>';
+}
+
+function addMedicine() {
+  var name = document.getElementById('med-name').value.trim();
+  var dose = document.getElementById('med-dose').value.trim();
+  var expiry = document.getElementById('med-expiry').value;
+  var stock = document.getElementById('med-stock').value;
+  if (!name) return;
+  db.ref('medicine').push({name: name, dose: dose, expiry: expiry, stock: stock});
+  document.getElementById('med-name').value = '';
+  document.getElementById('med-dose').value = '';
+  document.getElementById('med-expiry').value = '';
+}
+
+// ── NIGHT LOG ──
+function addNightLog() {
+  var text = document.getElementById('night-input').value.trim();
+  if (!text) return;
+  db.ref('nightLog').push({text: text, by: currentUser, ts: Date.now()});
+  document.getElementById('night-input').value = '';
+}
+
+function renderNightLog(data) {
+  if (!data) { document.getElementById('night-log-list').innerHTML = '<div class="empty">No night logs yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  items.forEach(function(e) {
+    var bg = e.by === 'adam' ? 'var(--adam-light);color:#1e3a5f' : 'var(--kristal-light);color:#14532d';
+    html += '<div class="night-entry"><div class="night-header"><span class="night-date">' + fmtDate(e.ts) + '</span><div style="display:flex;gap:8px;align-items:center"><span class="night-who" style="background:' + bg + '">' + (e.by || '?') + '</span><button class="night-del" onclick="db.ref(\'nightLog/' + e._key + '\').remove()">🗑</button></div></div><div class="night-text">' + esc(e.text) + '</div></div>';
+  });
+  document.getElementById('night-log-list').innerHTML = html || '<div class="empty">No logs</div>';
+}
+
+// ── EMERGENCY ──
+function renderEmergency(data) {
+  if (!data) { document.getElementById('emergency-personal-list').innerHTML = ''; return; }
+  var html = '';
+  for (var k in data) {
+    var c = data[k]; c._key = k;
+    html += '<div class="ec-personal"><div><div style="font-weight:700">' + esc(c.name) + '</div><div style="font-size:0.75rem;color:var(--text2)">' + esc(c.role || '') + '</div></div><a href="tel:' + esc(c.phone) + '" class="ec-call-btn">📞 Call</a></div>';
+  }
+  document.getElementById('emergency-personal-list').innerHTML = html;
+}
+
+function addEmergencyContact() {
+  var name = document.getElementById('ec-name').value.trim();
+  var role = document.getElementById('ec-role-input').value.trim();
+  var phone = document.getElementById('ec-phone').value.trim();
+  if (!name || !phone) return;
+  db.ref('emergency').push({name: name, role: role, phone: phone});
+  document.getElementById('ec-name').value = '';
+  document.getElementById('ec-role-input').value = '';
+  document.getElementById('ec-phone').value = '';
+}
+
+// ── GRANDMA NICKY ──
+function addGrandmaNote() {
+  var text = document.getElementById('grandma-note-input').value.trim();
+  if (!text) return;
+  db.ref('grandmaNotes').push({text: text, by: currentUser, ts: Date.now()});
+  document.getElementById('grandma-note-input').value = '';
+}
+
+function renderGrandmaNotes(data) {
+  if (!data) { document.getElementById('grandma-notes-list').innerHTML = '<div class="empty">No extra notes yet</div>'; return; }
+  var items = [];
+  for (var k in data) { var e = data[k]; e._key = k; items.push(e); }
+  items.sort(function(a, b) { return b.ts - a.ts; });
+  var html = '';
+  items.forEach(function(e) {
+    html += '<div class="note-card"><div class="note-meta"><span class="note-date">' + fmtDate(e.ts) + '</span><button class="note-del" onclick="db.ref(\'grandmaNotes/' + e._key + '\').remove()">🗑</button></div><div class="note-text">' + esc(e.text) + '</div></div>';
+  });
+  document.getElementById('grandma-notes-list').innerHTML = html || '<div class="empty">No notes</div>';
+}
+
+// ── DAYS OUT ──
+function addDaysOut(listType) {
+  var val = document.getElementById(listType + '-input').value.trim();
+  if (!val) return;
+  db.ref('daysOut/' + listType).push({label: val, done: false, addedBy: currentUser});
+  document.getElementById(listType + '-input').value = '';
+}
+
+function renderDaysOut(data) {
+  ['dayout', 'holiday'].forEach(function(t) {
+    var el = document.getElementById(t + '-list');
+    if (!el) return;
+    var items = data && data[t] ? data[t] : {};
+    var html = '';
+    for (var k in items) {
+      var it = items[k];
+      html += '<div class="days-out-item"><div class="days-out-check' + (it.done ? ' checked' : '') + '" onclick="db.ref(\'daysOut/' + t + '/' + k + '/done\').set(' + !it.done + ')">' + (it.done ? '✓' : '') + '</div><div class="days-out-label' + (it.done ? ' done' : '') + '">' + esc(it.label) + '</div><button class="days-out-del" onclick="db.ref(\'daysOut/' + t + '/' + k + '\').remove()">✕</button></div>';
+    }
+    el.innerHTML = html || '<div class="empty" style="padding:12px 0">Nothing added yet</div>';
+  });
+}
+
+// ── FAB ──
+function toggleFab() {
+  fabOpen = !fabOpen;
+  document.getElementById('fab-menu').classList.toggle('open', fabOpen);
+  document.getElementById('fab-overlay').classList.toggle('open', fabOpen);
+  document.getElementById('fab').textContent = fabOpen ? '✕' : '+';
+}
+
+function closeFab() {
+  fabOpen = false;
+  document.getElementById('fab-menu').classList.remove('open');
+  document.getElementById('fab-overlay').classList.remove('open');
+  document.getElementById('fab').textContent = '+';
+}
+
+function quickAdd(type) {
+  closeFab();
+  quickAddType = type;
+  var titles = {shopping: '🛒 Add to Shopping', note: '📝 Quick Note', task: '✅ Add Task', moment: '⭐ Log a Moment'};
+  var placeholders = {shopping: 'What do you need?', note: 'What\'s on your mind?', task: 'What needs doing?', moment: 'What happened? ✨'};
+  document.getElementById('quick-modal-title').textContent = titles[type];
+  var inp = document.getElementById('quick-input');
+  inp.placeholder = placeholders[type] || 'Type here...';
+  inp.value = '';
+  document.getElementById('quick-task-who-wrap').style.display = type === 'task' ? 'block' : 'none';
+  document.getElementById('quick-add-modal').classList.add('open');
+  setTimeout(function() { inp.focus(); }, 100);
+}
+
+function closeQuickAdd() {
+  document.getElementById('quick-add-modal').classList.remove('open');
+  quickAddType = null;
+}
+
+function saveQuickAdd() {
+  var val = document.getElementById('quick-input').value.trim();
+  if (!val) return;
+  setSyncStatus('syncing');
+  if (quickAddType === 'shopping') {
+    db.ref('shopping').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'note') {
+    db.ref('notes').push({text: val, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'task') {
+    var who = document.getElementById('quick-task-who').value;
+    db.ref('tasks').push({label: val, who: who, done: false}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'moment') {
+    db.ref('moments').push({text: val, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
+  }
+  closeQuickAdd();
+}
+
+// ── VOICE ──
+var recognition = null;
+var activeMicBtn = null;
+
+function startVoice(inputId, btnId) {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Voice input not supported. Try Chrome or Safari.');
+    return;
+  }
+  if (recognition) { recognition.stop(); return; }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-GB';
+  var btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('listening');
+  activeMicBtn = btnId;
+  recognition.onresult = function(e) {
+    var t = e.results[0][0].transcript;
+    var inp = document.getElementById(inputId);
+    if (inp) inp.value = (inp.value ? inp.value + ' ' : '') + t;
+  };
+  recognition.onend = recognition.onerror = function() {
+    recognition = null;
+    var b = document.getElementById(activeMicBtn);
+    if (b) b.classList.remove('listening');
+    activeMicBtn = null;
+  };
+  recognition.start();
+}
+
+// ── UTILITIES ──
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function fmtDate(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  return d.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ──
+(function() {
+  // Initialise Firebase now that all scripts are guaranteed loaded
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    console.error('Firebase failed to init:', e);
+    alert('Could not connect to database. Please check your internet connection and refresh.');
+    return;
+  }
+
+  // Set today date on growth inputs
+  var today = new Date().toISOString().slice(0, 10);
+  ['austin-growth-date','olivia-growth-date'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && !el.value) el.value = today;
+  });
+
+  // Auto-login if previously signed in
+  var saved = localStorage.getItem('familyHubUser');
+  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
+})();
+
+</script>
+</body>
+</html>
