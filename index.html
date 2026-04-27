@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f172a">
 <title>Family Hub</title>
@@ -1144,10 +1146,11 @@ function showApp() {
   try { document.getElementById("login-screen").style.display = "none"; document.getElementById("app").style.display = "flex"; } catch(e) { console.error("showApp display",e); return; }
   try { document.getElementById("av-adam").classList.toggle("me", currentUser === "adam"); } catch(e) {}
   try { document.getElementById("av-kristal").classList.toggle("me", currentUser === "kristal"); } catch(e) {}
-  try { initFirebaseListeners(); } catch(e) { console.error("Firebase",e); }
+  // Pre-load default schedule so tabs render immediately
+  window._scheduleData = DEFAULT_SCHEDULE;
   try { buildDayTabs(); } catch(e) { console.error("buildDayTabs",e); }
-  try { renderSchedule(); } catch(e) { console.error("renderSchedule",e); }
   try { setTodayTab(); } catch(e) { console.error("setTodayTab",e); }
+  try { initFirebaseListeners(); } catch(e) { console.error("Firebase",e); }
   try { updateDutyBanner(); } catch(e) { console.error("dutyBanner",e); }
   try { startWitchingCountdown(); } catch(e) { console.error("witching",e); }
   try { checkDateNight(); } catch(e) { console.error("dateNight",e); }
@@ -2153,11 +2156,4 @@ function fmtDate(ts) {
     if (el && !el.value) el.value = today;
   });
 
-  // Auto-login if previously signed in
-  var saved = localStorage.getItem('familyHubUser');
-  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
-})();
-
-</script>
-</body>
-</html>
+  // Auto-
