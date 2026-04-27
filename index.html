@@ -1056,8 +1056,8 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
 // Firebase loaded above, all functions defined here
 // ── FIREBASE ──
@@ -2156,4 +2156,11 @@ function fmtDate(ts) {
     if (el && !el.value) el.value = today;
   });
 
-  // Auto-
+  // Auto-login if previously signed in
+  var saved = localStorage.getItem('familyHubUser');
+  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
+})();
+
+</script>
+</body>
+</html>
