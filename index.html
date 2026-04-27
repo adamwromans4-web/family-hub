@@ -562,7 +562,11 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
 
     <!-- SHOPPING -->
     <div class="section" id="sec-shopping">
-      <div class="page-title">🛒 Shopping List</div>
+      <div class="page-title">🛒 Shopping Lists</div>
+      <div class="toggle-row" style="margin-bottom:14px;">
+        <button class="toggle-btn active" id="shop-tab-adam" onclick="switchShopList('adam')">🔵 Adam's List</button>
+        <button class="toggle-btn" id="shop-tab-kristal" onclick="switchShopList('kristal')">🟢 Kristal's List</button>
+      </div>
       <div class="add-bar">
         <input type="text" id="shop-input" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem()"/>
         <button class="mic-btn" id="shop-mic" onclick="startVoice('shop-input','shop-mic')">🎤</button>
@@ -593,7 +597,6 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
         <div class="more-item" onclick="showSubsection('calendar')"><div class="more-item-icon">📆</div><div class="more-item-label">Calendar</div><div class="more-item-sub">Events & dates</div></div>
         <div class="more-item" onclick="showSubsection('noticeboard')"><div class="more-item-icon">📌</div><div class="more-item-label">Noticeboard</div><div class="more-item-sub">Reminders</div></div>
         <div class="more-item" onclick="showSubsection('austin-health')"><div class="more-item-icon">🤒</div><div class="more-item-label">Austin's Health</div><div class="more-item-sub">Symptoms & meds</div></div>
-        <div class="more-item" onclick="showSubsection('austin-sleep')"><div class="more-item-icon">😴</div><div class="more-item-label">Austin's Sleep</div><div class="more-item-sub">Track nights</div></div>
         <div class="more-item" onclick="showSubsection('austin-growth')"><div class="more-item-icon">📏</div><div class="more-item-label">Austin's Growth</div><div class="more-item-sub">Height & weight</div></div>
         <div class="more-item" onclick="showSubsection('olivia-growth')"><div class="more-item-icon">🌸</div><div class="more-item-label">Olivia's Growth</div><div class="more-item-sub">Tween tracker</div></div>
         <div class="more-item" onclick="showSubsection('austin-mood')"><div class="more-item-icon">😊</div><div class="more-item-label">Austin's Mood</div><div class="more-item-sub">Daily emoji log</div></div>
@@ -606,6 +609,7 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
         <div class="more-item" onclick="showSubsection('grandma')"><div class="more-item-icon">👵</div><div class="more-item-label">Grandma Nicky</div><div class="more-item-sub">Babysitter notes</div></div>
         <div class="more-item" onclick="showSubsection('witching')"><div class="more-item-icon">😤</div><div class="more-item-label">4pm Plan</div><div class="more-item-sub">Witching hour</div></div>
         <div class="more-item" onclick="showSubsection('daysout')"><div class="more-item-icon">🗺️</div><div class="more-item-label">Days Out</div><div class="more-item-sub">Ideas & holidays</div></div>
+        <div class="more-item" onclick="showSubsection('homejobs')"><div class="more-item-icon">🔧</div><div class="more-item-label">Home Jobs</div><div class="more-item-sub">Reset & track</div></div>
       </div>
       <button onclick="doLogout()" style="width:100%;margin-top:20px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px;color:var(--text2);cursor:pointer;font-size:0.9rem;">Sign out</button>
     </div>
@@ -979,6 +983,42 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
         </div>
         <div id="holiday-list"></div>
       </div>
+      <div class="card" style="border-color:var(--both);">
+        <div class="card-title" style="color:var(--both)">🌹 Date Night Ideas</div>
+        <div class="add-bar">
+          <input type="text" id="datenight-input" placeholder="Add idea..." onkeydown="if(event.key==='Enter')addDaysOut('datenight')" />
+          <button class="mic-btn" id="datenight-mic" onclick="startVoice('datenight-input','datenight-mic')">🎤</button>
+          <button onclick="addDaysOut('datenight')" style="background:var(--both)">Add</button>
+        </div>
+        <div id="datenight-list"></div>
+      </div>
+    </div>
+
+    <!-- HOME JOBS -->
+    <div class="section" id="sec-homejobs">
+      <button class="back-btn" onclick="hideSubsection()">← Back</button>
+      <div class="page-title">🔧 Home Jobs</div>
+      <div class="week-reset-bar">
+        <div><div class="week-reset-text">Job list</div><div class="week-reset-sub" id="homejobs-reset-sub">Tap Reset to uncheck all jobs</div></div>
+        <button class="reset-btn" onclick="resetHomeJobs()">Reset all</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <input type="text" id="homejob-input" placeholder="Add a job..." style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:0.9rem;" onkeydown="if(event.key==='Enter')addHomeJob()" />
+        <select id="homejob-freq" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;color:var(--text);font-size:0.82rem;">
+          <option value="weekly">Weekly</option>
+          <option value="fortnightly">Fortnightly</option>
+          <option value="monthly">Monthly</option>
+          <option value="asneeded">As needed</option>
+        </select>
+        <button onclick="addHomeJob()" style="background:var(--helper);color:white;border:none;border-radius:12px;padding:12px 16px;cursor:pointer;font-weight:700;">+</button>
+      </div>
+      <div class="toggle-row">
+        <button class="toggle-btn active" id="hj-all-btn" onclick="filterHomeJobs('all')">All</button>
+        <button class="toggle-btn" id="hj-weekly-btn" onclick="filterHomeJobs('weekly')">Weekly</button>
+        <button class="toggle-btn" id="hj-fortnightly-btn" onclick="filterHomeJobs('fortnightly')">Fortnightly</button>
+        <button class="toggle-btn" id="hj-monthly-btn" onclick="filterHomeJobs('monthly')">Monthly</button>
+      </div>
+      <div id="homejobs-list"></div>
     </div>
 
   </main>
@@ -1009,6 +1049,9 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
     <div class="fab-item" onclick="quickAdd('note')">📝 Add a note</div>
     <div class="fab-item" onclick="quickAdd('task')">✅ Add a task</div>
     <div class="fab-item" onclick="quickAdd('moment')">⭐ Log a moment</div>
+    <div class="fab-item" onclick="quickAdd('dayout')">🗺️ Add days out idea</div>
+    <div class="fab-item" onclick="quickAdd('datenight')">🌹 Add date night idea</div>
+    <div class="fab-item" onclick="quickAdd('homejob')">🔧 Add home job</div>
   </div>
   <button id="fab" onclick="toggleFab()">+</button>
 </div>
@@ -1056,6 +1099,16 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
   </div>
 </div>
 
+<!-- TOAST NOTIFICATION -->
+<div id="toast" style="
+  position:fixed; bottom:calc(var(--nav-h) + var(--safe-bottom) + 16px); left:50%;
+  transform:translateX(-50%) translateY(20px); z-index:999;
+  background:#1e293b; color:#f1f5f9; border:1px solid #475569;
+  border-radius:24px; padding:10px 20px; font-size:0.88rem; font-weight:600;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4); opacity:0;
+  transition:opacity 0.2s, transform 0.2s; pointer-events:none; white-space:nowrap;
+">✅ Done!</div>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
@@ -1082,6 +1135,7 @@ var budgetMode = 'weekly';
 var selectedMood = null;
 var quickAddType = null;
 var fabOpen = false;
+var currentShopList = 'adam';
 var witchingInterval = null;
 var dutyInterval = null;
 
@@ -1092,15 +1146,7 @@ var DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 var NIGHT_DUTY = { 0:'kristal',1:'adam',2:'kristal',3:'adam',4:'kristal',5:'kristal',6:'kristal' };
 
 // ── DEFAULT SCHEDULE ──
-var DEFAULT_SCHEDULE = {
-  0:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:'Adam drops Austin at nursery',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Kristal on nights duty',who:'kristal'}],
-  1:[{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:"Adam's washing day",who:'adam'},{time:'08:00',label:'Kristal drops Austin at nursery',who:'kristal'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Adam on nights duty',who:'adam'}],
-  2:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'07:00',label:'Get Austin ready for nursery',who:'both'},{time:'08:00',label:'Adam drops Austin at nursery',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'17:00',label:'Pick Austin up from nursery',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'🌹 Date night (fortnightly — Grandma Nicky babysits)',who:'both'}],
-  3:[{time:'07:00',label:'Get Austin ready (shared care day)',who:'both'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'08:00',label:'Kristal starts work from home',who:'kristal'},{time:'09:00',label:'Auntie Laura arrives — covers Austin until noon',who:'helper'},{time:'12:00',label:'Auntie Laura leaves',who:'helper'},{time:'12:00',label:'Shared Austin care (Thu afternoon)',who:'both'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Adam on nights duty',who:'adam'}],
-  4:[{time:'05:00',label:'Gym',who:'gym'},{time:'06:30',label:'Home from gym',who:'adam'},{time:'08:00',label:'Olivia leaves for school (walks herself)',who:'kids'},{time:'08:00',label:'Adam starts work',who:'adam'},{time:'08:00',label:"Kristal's full day with Austin",who:'kristal'},{time:'14:30',label:'Olivia home from school',who:'kids'},{time:'17:00',label:'Adam finishes work',who:'adam'},{time:'18:00',label:'🍕 Friday takeaway — food ordered in!',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Kristal on nights duty',who:'kristal'}],
-  5:[{time:'09:00',label:'👨‍👩‍👧‍👦 Family activity time',who:'both'},{time:'13:00',label:'Adam solo rest slot',who:'adam'},{time:'13:00',label:'Kristal solo rest slot',who:'kristal'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'Couple evening time 💕',who:'both'},{time:'21:00',label:'Kristal on nights duty',who:'kristal'}],
-  6:[{time:'09:00',label:'😴 Rest day — no outings',who:'rest'},{time:'10:00',label:"Kristal's washing day",who:'kristal'},{time:'17:00',label:'Kristal cooks tea',who:'kristal'},{time:'18:30',label:'📋 30 min week prep',who:'both'},{time:'19:00',label:"Adam runs Austin's bath",who:'adam'},{time:'19:15',label:'Adam gets Austin ready for bed',who:'adam'},{time:'19:30',label:'Kristal puts Austin down',who:'kristal'},{time:'20:00',label:'💬 15 min weekly check-in',who:'both'},{time:'20:30',label:'Kristal on nights duty',who:'kristal'}]
-};
+var DEFAULT_SCHEDULE = { 0:[], 1:[], 2:[], 3:[], 4:[], 5:[], 6:[] };
 
 var DEFAULT_TASKS = [
   {label:"Washing (Adam — Tuesdays only)",who:'adam',done:false},
@@ -1165,11 +1211,23 @@ function setSyncStatus(s) { document.getElementById('sync-dot').className = 'syn
 function initFirebaseListeners() {
   db.ref('.info/connected').on('value', function(snap) { setSyncStatus(snap.val() ? 'connected' : ''); });
 
+  // Always seed schedule if empty, then render
+  db.ref('schedule').once('value', function(snap) {
+    var d = snap.val();
+    if (!d) {
+      db.ref('schedule').set(DEFAULT_SCHEDULE, function() {
+        window._scheduleData = DEFAULT_SCHEDULE;
+        renderSchedule();
+      });
+    } else {
+      window._scheduleData = d;
+      renderSchedule();
+    }
+  });
+  // Keep listening for live updates
   db.ref('schedule').on('value', function(snap) {
     var d = snap.val();
-    if (d) { window._scheduleData = d; }
-    else { db.ref('schedule').set(DEFAULT_SCHEDULE); window._scheduleData = DEFAULT_SCHEDULE; }
-    renderSchedule();
+    if (d) { window._scheduleData = d; renderSchedule(); }
   });
 
   db.ref('tasks').on('value', function(snap) {
@@ -1181,7 +1239,8 @@ function initFirebaseListeners() {
     } else { renderTasks(d); }
   });
 
-  db.ref('shopping').on('value', function(snap) { renderShopping(snap.val()); });
+  db.ref('shopping/adam').on('value', function(snap) { if (currentShopList === 'adam') renderShopping(snap.val()); });
+  db.ref('shopping/kristal').on('value', function(snap) { if (currentShopList === 'kristal') renderShopping(snap.val()); });
   db.ref('notes').on('value', function(snap) { renderNotes(snap.val()); });
   db.ref('budget').on('value', function(snap) { renderBudget(snap.val()); });
   db.ref('calendar').on('value', function(snap) { renderCalendar(snap.val()); });
@@ -1201,6 +1260,10 @@ function initFirebaseListeners() {
   db.ref('daysOut').on('value', function(snap) { renderDaysOut(snap.val()); });
   db.ref('savingsGoals').on('value', function(snap) { renderSavingsGoals(snap.val()); });
   db.ref('meals').on('value', function() {});
+  db.ref('homeJobs').on('value', function(snap) { renderHomeJobs(snap.val()); });
+
+  // Seed home jobs if empty
+  seedHomeJobsIfEmpty();
 
   // Seed bags if empty
   db.ref('bags').once('value', function(snap) {
@@ -1413,6 +1476,7 @@ function buildTaskGroup(title, items, color) {
 
 function toggleTask(key, newDone) {
   setSyncStatus('syncing');
+  if (newDone) showToast('✅ Task done!');
   db.ref('tasks/' + key + '/done').set(newDone, function() { setSyncStatus('connected'); });
 }
 
@@ -1432,8 +1496,15 @@ function addTask() {
 }
 
 // ── SHOPPING ──
+function switchShopList(who) {
+  currentShopList = who;
+  document.getElementById('shop-tab-adam').classList.toggle('active', who === 'adam');
+  document.getElementById('shop-tab-kristal').classList.toggle('active', who === 'kristal');
+  db.ref('shopping/' + who).once('value', function(snap) { renderShopping(snap.val()); });
+}
+
 function renderShopping(data) {
-  if (!data) { document.getElementById('shop-list').innerHTML = '<div class="empty">Shopping list is empty</div>'; return; }
+  if (!data) { document.getElementById('shop-list').innerHTML = '<div class="empty">List is empty — add something above!</div>'; return; }
   var items = [];
   for (var k in data) { var i = data[k]; i._key = k; items.push(i); }
   items.sort(function(a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
@@ -1450,13 +1521,15 @@ function addShopItem() {
   var val = document.getElementById('shop-input').value.trim();
   if (!val) return;
   setSyncStatus('syncing');
-  db.ref('shopping').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  db.ref('shopping/' + currentShopList).push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
   document.getElementById('shop-input').value = '';
+  showToast('🛒 Added to list!');
 }
 
 function toggleShop(key, done) {
   setSyncStatus('syncing');
-  db.ref('shopping/' + key + '/done').set(done, function() { setSyncStatus('connected'); });
+  if (done) showToast('🛒 Item ticked off!');
+  db.ref('shopping/' + currentShopList + '/' + key + '/done').set(done, function() { setSyncStatus('connected'); });
 }
 
 // ── SWIPE TO DELETE ──
@@ -1489,7 +1562,7 @@ function initSwipeToDelete() {
         var type = wrap.getAttribute('data-type');
         setTimeout(function() {
           if (type === 'task') { db.ref('tasks/' + key).remove(); }
-          else if (type === 'shop') { db.ref('shopping/' + key).remove(); }
+          else if (type === 'shop') { db.ref('shopping/' + currentShopList + '/' + key).remove(); }
         }, 300);
       } else {
         inner.style.transform = 'translateX(0)';
@@ -1526,7 +1599,7 @@ function initPullToRefresh() {
       ptr.textContent = '⟳ Refreshing...';
       setTimeout(function() {
         ptr.classList.remove('visible');
-        db.ref('shopping').once('value', function(snap) { renderShopping(snap.val()); });
+        db.ref('shopping/' + currentShopList).once('value', function(snap) { renderShopping(snap.val()); });
         db.ref('tasks').once('value', function(snap) { if (snap.val()) renderTasks(snap.val()); });
       }, 800);
     }
@@ -1555,6 +1628,7 @@ function addNote() {
   setSyncStatus('syncing');
   db.ref('notes').push({text: text, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
   document.getElementById('note-input').value = '';
+  showToast('📝 Note saved!');
 }
 
 // ── MEALS ──
@@ -1888,6 +1962,7 @@ function renderBagList(who, data) {
 }
 
 function toggleBag(who, key, done) {
+  if (done) showToast('🎒 Packed!');
   db.ref('bags/' + who + '/' + key + '/done').set(done);
 }
 
@@ -1914,6 +1989,7 @@ function addMoment() {
   if (!text) return;
   db.ref('moments').push({text: text, by: currentUser, ts: Date.now()});
   document.getElementById('moment-input').value = '';
+  showToast('⭐ Moment saved!');
 }
 
 function renderMoments(data) {
@@ -2029,7 +2105,7 @@ function addDaysOut(listType) {
 }
 
 function renderDaysOut(data) {
-  ['dayout', 'holiday'].forEach(function(t) {
+  ['dayout', 'holiday', 'datenight'].forEach(function(t) {
     var el = document.getElementById(t + '-list');
     if (!el) return;
     var items = data && data[t] ? data[t] : {};
@@ -2060,8 +2136,8 @@ function closeFab() {
 function quickAdd(type) {
   closeFab();
   quickAddType = type;
-  var titles = {shopping: '🛒 Add to Shopping', note: '📝 Quick Note', task: '✅ Add Task', moment: '⭐ Log a Moment'};
-  var placeholders = {shopping: 'What do you need?', note: 'What\'s on your mind?', task: 'What needs doing?', moment: 'What happened? ✨'};
+  var titles = {shopping: '🛒 Add to Shopping', note: '📝 Quick Note', task: '✅ Add Task', moment: '⭐ Log a Moment', dayout: '🗺️ Days Out Idea', datenight: '🌹 Date Night Idea', homejob: '🔧 Add Home Job'};
+  var placeholders = {shopping: 'What do you need?', note: 'What\'s on your mind?', task: 'What needs doing?', moment: 'What happened? ✨', dayout: 'Where could you go?', datenight: 'What could you do together?', homejob: 'e.g. Mow the lawn...'};
   document.getElementById('quick-modal-title').textContent = titles[type];
   var inp = document.getElementById('quick-input');
   inp.placeholder = placeholders[type] || 'Type here...';
@@ -2089,7 +2165,14 @@ function saveQuickAdd() {
     db.ref('tasks').push({label: val, who: who, done: false}, function() { setSyncStatus('connected'); });
   } else if (quickAddType === 'moment') {
     db.ref('moments').push({text: val, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'dayout') {
+    db.ref('daysOut/dayout').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'datenight') {
+    db.ref('daysOut/datenight').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'homejob') {
+    db.ref('homeJobs').push({label: val, freq: 'asneeded', done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
   }
+  showToast('✅ Saved!');
   closeQuickAdd();
 }
 
@@ -2123,6 +2206,128 @@ function startVoice(inputId, btnId) {
     activeMicBtn = null;
   };
   recognition.start();
+}
+
+// ── HOME JOBS ──
+var homeJobsFilter = 'all';
+var _homeJobsData = null;
+
+var DEFAULT_HOME_JOBS = [
+  {label: 'Mow the lawn', freq: 'weekly', done: false},
+  {label: 'Trim the hedge', freq: 'fortnightly', done: false},
+  {label: 'Clean the bathrooms', freq: 'weekly', done: false},
+  {label: 'Hoover throughout', freq: 'weekly', done: false},
+  {label: 'Mop kitchen floor', freq: 'weekly', done: false},
+  {label: 'Clean the oven', freq: 'monthly', done: false},
+  {label: 'Fix the bench', freq: 'asneeded', done: false},
+  {label: 'Wipe down kitchen surfaces', freq: 'weekly', done: false},
+  {label: 'Empty and clean bins', freq: 'weekly', done: false},
+  {label: 'Weed the garden', freq: 'fortnightly', done: false},
+  {label: 'Clean windows inside', freq: 'monthly', done: false},
+  {label: 'Check smoke alarm batteries', freq: 'monthly', done: false}
+];
+
+function seedHomeJobsIfEmpty() {
+  db.ref('homeJobs').once('value', function(snap) {
+    if (!snap.val()) {
+      var obj = {};
+      for (var i = 0; i < DEFAULT_HOME_JOBS.length; i++) {
+        obj[db.ref('homeJobs').push().key] = DEFAULT_HOME_JOBS[i];
+      }
+      db.ref('homeJobs').set(obj);
+    }
+  });
+}
+
+function addHomeJob() {
+  var label = document.getElementById('homejob-input').value.trim();
+  var freq = document.getElementById('homejob-freq').value;
+  if (!label) return;
+  db.ref('homeJobs').push({label: label, freq: freq, done: false, addedBy: currentUser});
+  document.getElementById('homejob-input').value = '';
+}
+
+function filterHomeJobs(filter) {
+  homeJobsFilter = filter;
+  ['all','weekly','fortnightly','monthly'].forEach(function(f) {
+    var btn = document.getElementById('hj-' + f + '-btn');
+    if (btn) btn.classList.toggle('active', f === filter);
+  });
+  renderHomeJobs(_homeJobsData);
+}
+
+function renderHomeJobs(data) {
+  _homeJobsData = data;
+  var el = document.getElementById('homejobs-list');
+  if (!el) return;
+  if (!data) {
+    seedHomeJobsIfEmpty();
+    el.innerHTML = '<div class="empty">Loading jobs...</div>';
+    return;
+  }
+  var freqColors = {weekly: 'var(--adam)', fortnightly: 'var(--both)', monthly: 'var(--kristal)', asneeded: 'var(--helper)'};
+  var freqLabels = {weekly: 'Weekly', fortnightly: 'Fortnightly', monthly: 'Monthly', asneeded: 'As needed'};
+  var items = [];
+  for (var k in data) { var j = data[k]; j._key = k; items.push(j); }
+  if (homeJobsFilter !== 'all') {
+    items = items.filter(function(j) { return j.freq === homeJobsFilter; });
+  }
+  items.sort(function(a, b) {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (a.label || '').localeCompare(b.label || '');
+  });
+  var done = items.filter(function(j) { return j.done; }).length;
+  var total = items.length;
+  var pct = total ? Math.round((done / total) * 100) : 0;
+  var html = '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text2);margin-bottom:6px;"><span>' + done + ' of ' + total + ' done</span><span>' + pct + '%</span></div><div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:var(--helper);border-radius:4px;transition:width 0.4s;"></div></div></div>';
+  for (var i = 0; i < items.length; i++) {
+    var job = items[i];
+    var fc = freqColors[job.freq] || 'var(--rest)';
+    var fl = freqLabels[job.freq] || job.freq;
+    html += '<div class="task-item' + (job.done ? ' done' : '') + '" onclick="toggleHomeJob('' + job._key + '',' + !job.done + ')" style="margin-bottom:8px;">'
+          + '<div class="task-check' + (job.done ? ' checked' : '') + '">' + (job.done ? '✓' : '') + '</div>'
+          + '<div class="task-label">' + esc(job.label) + '<br><span style="font-size:0.68rem;color:' + fc + ';font-weight:700;">' + fl + '</span></div>'
+          + '<button class="task-del" onclick="deleteHomeJob(event,'' + job._key + '')">🗑</button>'
+          + '</div>';
+  }
+  el.innerHTML = html || '<div class="empty">No jobs found</div>';
+}
+
+function toggleHomeJob(key, done) {
+  setSyncStatus('syncing');
+  if (done) showToast('🔧 Job done!');
+  db.ref('homeJobs/' + key + '/done').set(done, function() { setSyncStatus('connected'); });
+}
+
+function deleteHomeJob(e, key) {
+  e.stopPropagation();
+  db.ref('homeJobs/' + key).remove();
+}
+
+function resetHomeJobs() {
+  if (!confirm('Reset all jobs to undone?')) return;
+  db.ref('homeJobs').once('value', function(snap) {
+    var d = snap.val();
+    if (!d) return;
+    var updates = {};
+    for (var k in d) updates[k + '/done'] = false;
+    db.ref('homeJobs').update(updates);
+  });
+}
+
+// ── TOAST ──
+var toastTimer = null;
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  if (toastTimer) clearTimeout(toastTimer);
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  toastTimer = setTimeout(function() {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2000);
 }
 
 // ── UTILITIES ──
