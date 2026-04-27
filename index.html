@@ -7,11 +7,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f172a">
 <title>Family Hub</title>
-<link rel="manifest" href="manifest.json">
+
 
 <!-- Firebase Compat SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <style>
 :root {
@@ -1056,9 +1054,10 @@ textarea.modal-input { min-height: 80px; resize: vertical; }
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// All code runs after page fully loaded so Firebase SDKs are guaranteed ready
-window.onload = function() {
+// Firebase loaded above, all functions defined here
 // ── FIREBASE ──
 var firebaseConfig = {
   apiKey: "AIzaSyCPorlwE9Zl4M9jMS-SX9rVWEN2Z1Osxgg",
@@ -1069,8 +1068,8 @@ var firebaseConfig = {
   messagingSenderId: "1020942521265",
   appId: "1:1020942521265:web:e1d5c719c46c798dd56390"
 };
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
+
+var db = null;
 
 // ── STATE ──
 var currentUser = null;
@@ -1142,20 +1141,19 @@ function doLogout() {
 }
 
 function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  document.getElementById('av-adam').classList.toggle('me', currentUser === 'adam');
-  document.getElementById('av-kristal').classList.toggle('me', currentUser === 'kristal');
-  initFirebaseListeners();
-  buildDayTabs();
-  renderSchedule();
-  setTodayTab();
-  updateDutyBanner();
-  startWitchingCountdown();
-  checkDateNight();
-  checkAutoTaskReset();
-  initSwipeToDelete();
-  initPullToRefresh();
+  try { document.getElementById("login-screen").style.display = "none"; document.getElementById("app").style.display = "flex"; } catch(e) { console.error("showApp display",e); return; }
+  try { document.getElementById("av-adam").classList.toggle("me", currentUser === "adam"); } catch(e) {}
+  try { document.getElementById("av-kristal").classList.toggle("me", currentUser === "kristal"); } catch(e) {}
+  try { initFirebaseListeners(); } catch(e) { console.error("Firebase",e); }
+  try { buildDayTabs(); } catch(e) { console.error("buildDayTabs",e); }
+  try { renderSchedule(); } catch(e) { console.error("renderSchedule",e); }
+  try { setTodayTab(); } catch(e) { console.error("setTodayTab",e); }
+  try { updateDutyBanner(); } catch(e) { console.error("dutyBanner",e); }
+  try { startWitchingCountdown(); } catch(e) { console.error("witching",e); }
+  try { checkDateNight(); } catch(e) { console.error("dateNight",e); }
+  try { checkAutoTaskReset(); } catch(e) { console.error("taskReset",e); }
+  try { initSwipeToDelete(); } catch(e) { console.error("swipe",e); }
+  try { initPullToRefresh(); } catch(e) { console.error("ptr",e); }
 }
 
 // ── FIREBASE ──
@@ -2137,17 +2135,29 @@ function fmtDate(ts) {
 }
 
 // ── INIT ──
-(function init() {
-  var saved = localStorage.getItem('familyHubUser');
-  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
+(function() {
+  // Initialise Firebase now that all scripts are guaranteed loaded
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    console.error('Firebase failed to init:', e);
+    alert('Could not connect to database. Please check your internet connection and refresh.');
+    return;
+  }
+
+  // Set today date on growth inputs
   var today = new Date().toISOString().slice(0, 10);
   ['austin-growth-date','olivia-growth-date'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el && !el.value) el.value = today;
   });
+
+  // Auto-login if previously signed in
+  var saved = localStorage.getItem('familyHubUser');
+  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
 })();
 
-}; // end window.onload
 </script>
 </body>
 </html>
