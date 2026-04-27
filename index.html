@@ -2284,10 +2284,10 @@ function renderHomeJobs(data) {
     var job = items[i];
     var fc = freqColors[job.freq] || 'var(--rest)';
     var fl = freqLabels[job.freq] || job.freq;
-    html += '<div class="task-item' + (job.done ? ' done' : '') + '" onclick="toggleHomeJob('' + job._key + '',' + !job.done + ')" style="margin-bottom:8px;">'
+    html += '<div class="task-item' + (job.done ? ' done' : '') + '" onclick="toggleHomeJob(\'' + job._key + '\',' + !job.done + ')" style="margin-bottom:8px;">'
           + '<div class="task-check' + (job.done ? ' checked' : '') + '">' + (job.done ? '✓' : '') + '</div>'
           + '<div class="task-label">' + esc(job.label) + '<br><span style="font-size:0.68rem;color:' + fc + ';font-weight:700;">' + fl + '</span></div>'
-          + '<button class="task-del" onclick="deleteHomeJob(event,'' + job._key + '')">🗑</button>'
+          + '<button class="task-del" onclick="deleteHomeJob(event,\'' + job._key + '\')">🗑</button>'
           + '</div>';
   }
   el.innerHTML = html || '<div class="empty">No jobs found</div>';
