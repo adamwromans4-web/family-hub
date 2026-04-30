@@ -2300,4 +2300,208 @@ function saveQuickAdd() {
     var who = document.getElementById('quick-task-who').value;
     db.ref('tasks').push({label: val, who: who, done: false}, function() { setSyncStatus('connected'); });
   } else if (quickAddType === 'moment') {
-    db.ref('m
+    db.ref('moments').push({text: val, by: currentUser, ts: Date.now()}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'dayout') {
+    db.ref('daysOut/dayout').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'datenight') {
+    db.ref('daysOut/datenight').push({label: val, done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  } else if (quickAddType === 'homejob') {
+    db.ref('homeJobs').push({label: val, freq: 'asneeded', done: false, addedBy: currentUser}, function() { setSyncStatus('connected'); });
+  }
+  showToast('✅ Saved!');
+  closeQuickAdd();
+}
+
+// ── VOICE ──
+var recognition = null;
+var activeMicBtn = null;
+
+function startVoice(inputId, btnId) {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Voice input not supported. Try Chrome or Safari.');
+    return;
+  }
+  if (recognition) { recognition.stop(); return; }
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-GB';
+  var btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('listening');
+  activeMicBtn = btnId;
+  recognition.onresult = function(e) {
+    var t = e.results[0][0].transcript;
+    var inp = document.getElementById(inputId);
+    if (inp) inp.value = (inp.value ? inp.value + ' ' : '') + t;
+  };
+  recognition.onend = recognition.onerror = function() {
+    recognition = null;
+    var b = document.getElementById(activeMicBtn);
+    if (b) b.classList.remove('listening');
+    activeMicBtn = null;
+  };
+  recognition.start();
+}
+
+// ── HOME JOBS ──
+var homeJobsFilter = 'all';
+var _homeJobsData = null;
+
+var DEFAULT_HOME_JOBS = [
+  {label: 'Mow the lawn', freq: 'weekly', done: false},
+  {label: 'Trim the hedge', freq: 'fortnightly', done: false},
+  {label: 'Clean the bathrooms', freq: 'weekly', done: false},
+  {label: 'Hoover throughout', freq: 'weekly', done: false},
+  {label: 'Mop kitchen floor', freq: 'weekly', done: false},
+  {label: 'Clean the oven', freq: 'monthly', done: false},
+  {label: 'Fix the bench', freq: 'asneeded', done: false},
+  {label: 'Wipe down kitchen surfaces', freq: 'weekly', done: false},
+  {label: 'Empty and clean bins', freq: 'weekly', done: false},
+  {label: 'Weed the garden', freq: 'fortnightly', done: false},
+  {label: 'Clean windows inside', freq: 'monthly', done: false},
+  {label: 'Check smoke alarm batteries', freq: 'monthly', done: false}
+];
+
+function seedHomeJobsIfEmpty() {
+  db.ref('homeJobs').once('value', function(snap) {
+    if (!snap.val()) {
+      var obj = {};
+      for (var i = 0; i < DEFAULT_HOME_JOBS.length; i++) {
+        obj[db.ref('homeJobs').push().key] = DEFAULT_HOME_JOBS[i];
+      }
+      db.ref('homeJobs').set(obj);
+    }
+  });
+}
+
+function addHomeJob() {
+  var label = document.getElementById('homejob-input').value.trim();
+  var freq = document.getElementById('homejob-freq').value;
+  if (!label) return;
+  db.ref('homeJobs').push({label: label, freq: freq, done: false, addedBy: currentUser});
+  document.getElementById('homejob-input').value = '';
+}
+
+function filterHomeJobs(filter) {
+  homeJobsFilter = filter;
+  ['all','weekly','fortnightly','monthly'].forEach(function(f) {
+    var btn = document.getElementById('hj-' + f + '-btn');
+    if (btn) btn.classList.toggle('active', f === filter);
+  });
+  renderHomeJobs(_homeJobsData);
+}
+
+function renderHomeJobs(data) {
+  _homeJobsData = data;
+  var el = document.getElementById('homejobs-list');
+  if (!el) return;
+  if (!data) {
+    seedHomeJobsIfEmpty();
+    el.innerHTML = '<div class="empty">Loading jobs...</div>';
+    return;
+  }
+  var freqColors = {weekly: 'var(--adam)', fortnightly: 'var(--both)', monthly: 'var(--kristal)', asneeded: 'var(--helper)'};
+  var freqLabels = {weekly: 'Weekly', fortnightly: 'Fortnightly', monthly: 'Monthly', asneeded: 'As needed'};
+  var items = [];
+  for (var k in data) { var j = data[k]; j._key = k; items.push(j); }
+  if (homeJobsFilter !== 'all') {
+    items = items.filter(function(j) { return j.freq === homeJobsFilter; });
+  }
+  items.sort(function(a, b) {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return (a.label || '').localeCompare(b.label || '');
+  });
+  var done = items.filter(function(j) { return j.done; }).length;
+  var total = items.length;
+  var pct = total ? Math.round((done / total) * 100) : 0;
+  var html = '<div style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--text2);margin-bottom:6px;"><span>' + done + ' of ' + total + ' done</span><span>' + pct + '%</span></div><div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;"><div style="height:100%;width:' + pct + '%;background:var(--helper);border-radius:4px;transition:width 0.4s;"></div></div></div>';
+  for (var i = 0; i < items.length; i++) {
+    var job = items[i];
+    var fc = freqColors[job.freq] || 'var(--rest)';
+    var fl = freqLabels[job.freq] || job.freq;
+    html += '<div class="task-item' + (job.done ? ' done' : '') + '" onclick="toggleHomeJob(\'' + job._key + '\',' + !job.done + ')" style="margin-bottom:8px;">'
+          + '<div class="task-check' + (job.done ? ' checked' : '') + '">' + (job.done ? '✓' : '') + '</div>'
+          + '<div class="task-label">' + esc(job.label) + '<br><span style="font-size:0.68rem;color:' + fc + ';font-weight:700;">' + fl + '</span></div>'
+          + '<button class="task-del" onclick="deleteHomeJob(event,\'' + job._key + '\')">🗑</button>'
+          + '</div>';
+  }
+  el.innerHTML = html || '<div class="empty">No jobs found</div>';
+}
+
+function toggleHomeJob(key, done) {
+  setSyncStatus('syncing');
+  if (done) showToast('🔧 Job done!');
+  db.ref('homeJobs/' + key + '/done').set(done, function() { setSyncStatus('connected'); });
+}
+
+function deleteHomeJob(e, key) {
+  e.stopPropagation();
+  db.ref('homeJobs/' + key).remove();
+}
+
+function resetHomeJobs() {
+  if (!confirm('Reset all jobs to undone?')) return;
+  db.ref('homeJobs').once('value', function(snap) {
+    var d = snap.val();
+    if (!d) return;
+    var updates = {};
+    for (var k in d) updates[k + '/done'] = false;
+    db.ref('homeJobs').update(updates);
+  });
+}
+
+// ── TOAST ──
+var toastTimer = null;
+function showToast(msg) {
+  var el = document.getElementById('toast');
+  if (!el) return;
+  if (toastTimer) clearTimeout(toastTimer);
+  el.textContent = msg;
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  toastTimer = setTimeout(function() {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(20px)';
+  }, 2000);
+}
+
+// ── UTILITIES ──
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+function fmtDate(ts) {
+  if (!ts) return '';
+  var d = new Date(ts);
+  return d.toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'});
+}
+
+// ── INIT ──
+(function() {
+  // Initialise Firebase now that all scripts are guaranteed loaded
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    console.error('Firebase failed to init:', e);
+    alert('Could not connect to database. Please check your internet connection and refresh.');
+    return;
+  }
+
+  // Set today date on growth inputs
+  var today = new Date().toISOString().slice(0, 10);
+  ['austin-growth-date','olivia-growth-date'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && !el.value) el.value = today;
+  });
+
+  // Auto-login if previously signed in
+  var saved = localStorage.getItem('familyHubUser');
+  if (saved === 'adam' || saved === 'kristal') { currentUser = saved; showApp(); }
+})();
+
+</script>
+</body>
+</html>
